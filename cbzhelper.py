@@ -140,7 +140,9 @@ class Helper:
                 f.write(content)
 
         properties = Image.open(page)
-        if page_type == 'DEFAULT':
+        if page_type == 'DEFAULT' or not page_type in ['FrontCover', 'InnerCover', 'Roundup', 'Story',
+                                                       'Advertisment', 'Editorial', 'Letters', 'Preview',
+                                                       'BackCover', 'Other', 'Deleted']:
             page_type = 'FrontCover' if image == 1 else 'Story'
 
         self.pages.append({
