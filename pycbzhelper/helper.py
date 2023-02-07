@@ -1,4 +1,5 @@
 import os
+import pathlib
 import shutil
 import zipfile
 
@@ -64,8 +65,7 @@ class Helper:
                 if not page.get('Type'):
                     page['Type'] = 'FrontCover' if i == 0 else 'Story'
 
-                item = '		<Page DoublePage="True"' if get_key_value(
-                    page.get('DoublePage', False)) == 'Yes' else '		<Page'
+                item = '		<Page DoublePage="True"' if get_key_value(page.get('DoublePage', False)) == 'Yes' else '		<Page'
                 pages.append(
                     item + ' Image="{image}" ImageHeight="{height}" ImageSize="{size}" ImageWidth="{width}" Type="{type}" />'.format(
                         double="False" if get_key_value(page.get('DoublePage', False)) == 'No' else "True",
@@ -75,7 +75,7 @@ class Helper:
                         width=properties.width,
                         type=page['Type']
                     )
-                    )
+                )
             pages.append("	</Pages>")
             del kwargs['Pages']
         pages.append("</ComicInfo>")
@@ -106,11 +106,13 @@ class Helper:
 
         clear_path = []
         cbz = zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_STORED)
-        for file in self._files:
-            if os.path.dirname(file) not in clear_path:
-                clear_path.append(os.path.dirname(file))
-            with open(file, mode='rb') as f:
-                cbz.writestr(os.path.basename(file), data=f.read())
+        for i in range(len(self._files)):
+            if os.path.dirname(self._files[i]) not in clear_path:
+                clear_path.append(os.path.dirname(self._files[i]))
+            with open(self._files[i], mode='rb') as f:
+                extension = pathlib.Path(self._files[i]).suffix
+                cbz.writestr(f"page-{i + 1:03d}.{'.jpg' if extension == '' else extension}", data=f.read())
+                f.close()
         cbz.writestr('ComicInfo.xml', data=self.metadata.encode('utf-8'))
         cbz.close()
         print(f"INFO: File create: {output}")
