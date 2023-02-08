@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="1e3b2b5c-bbd5-4f54-89d8-f73775e9feba" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.travis.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.travis.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/LICENSE" beforeDir="false" afterPath="$PROJECT_DIR$/LICENSE" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pycbzhelper/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/pycbzhelper/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pycbzhelper/comicinfo.py" beforeDir="false" afterPath="$PROJECT_DIR$/pycbzhelper/comicinfo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pycbzhelper/exceptions.py" beforeDir="false" afterPath="$PROJECT_DIR$/pycbzhelper/exceptions.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pycbzhelper/helper.py" beforeDir="false" afterPath="$PROJECT_DIR$/pycbzhelper/helper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pycbzhelper/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/pycbzhelper/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/setup.py" beforeDir="false" afterPath="$PROJECT_DIR$/setup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="2LRm1wsZXqsVSpU3IHCZQJU0e6s" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1e3b2b5c-bbd5-4f54-89d8-f73775e9feba" name="Default Changelist" comment="" />
+      <created>1675842063151</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1675842063151</updated>
+      <workItem from="1675842067503" duration="60000" />
+      <workItem from="1675871067263" duration="307000" />
+      <workItem from="1675879384779" duration="29000" />
+      <workItem from="1675881442099" duration="621000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

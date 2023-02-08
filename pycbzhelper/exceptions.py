@@ -12,3 +12,7 @@ class MissingPageFile(PyCBZHelperException):
 
 class InvalidFilePermission(PyCBZHelperException):
     """Unable to delete existing file."""
+
+
+class FileNotFound(PyCBZHelperException):
+    """The specified source file was not found."""

@@ -3,12 +3,13 @@ import pathlib
 import shutil
 import zipfile
 
+import requests
 from json2xml import json2xml
 from langcodes import Language
 from PIL import Image
 
 from pycbzhelper.comicinfo import KEYS_STRING, KEYS_INT, KEYS_SPECIAL, KEYS_AGE, KEYS_FORMAT, KEYS_PAGE_TYPE
-from pycbzhelper.exceptions import InvalidKeyValue, MissingPageFile, InvalidFilePermission
+from pycbzhelper.exceptions import InvalidKeyValue, MissingPageFile, InvalidFilePermission, FileNotFound
 from pycbzhelper.utils import get_key_value, delete_none, slugify
 
 
@@ -60,6 +61,16 @@ class Helper:
             kwargs['PageCount'] = len(kwargs.get('Pages'))
             for i in range(kwargs.get('PageCount')):
                 page = kwargs.get('Pages')[i]
+                if isinstance(page['File'], bytes) or (isinstance(page['File'], str) and page['File'].startswith('https://')):
+                    file = os.path.join("tmp", f"page-{i:03d}.jpg")
+                    with open(file, mode="wb") as f:
+                        f.write(page['File'] if isinstance(page['File'], bytes) else requests.get(url=page['File']).content)
+                        f.close()
+                    page['File'] = file
+
+                if not os.path.exists(page['File']):
+                    raise FileNotFound(f"ERROR: Source file is invalid: {page['File']}")
+
                 properties = Image.open(page['File'])
                 self._files.append(page['File'])
                 if not page.get('Type'):
