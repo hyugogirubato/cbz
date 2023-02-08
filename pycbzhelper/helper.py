@@ -90,7 +90,7 @@ class Helper:
         for key in KEYS_STRING + KEYS_INT + KEYS_SPECIAL:
             json_data[key] = get_key_value(kwargs.get(key))
 
-        xml_data = json2xml.Json2xml(delete_none(json_data), wrapper="ComicInfo", pretty=True, attr_type=False).to_xml()
+        xml_data = json2xml.Json2xml(delete_none(json_data), wrapper="ComicInfo", pretty=True, attr_type=False, item_wrap=False).to_xml()
         if not xml_data:
             xml_data = '\n'.join(['<?xml version="1.0" ?>', '<ComicInfo>', '</ComicInfo>'])
             print('WARNING: No metadata to create.')
