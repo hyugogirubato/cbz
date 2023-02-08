@@ -55,7 +55,7 @@ class Helper:
         # NOTE: Set metadata
         pages = []
         if kwargs.get('Pages'):
-            # [{'File': 'FILE_PATH', 'Type': 'FrontCover', 'DoublePage': False}]
+            # [{'File': 'FILE_PATH', 'Type': 'FrontCover', 'DoublePage': False, 'Bookmark': '', 'Key': ''}]
             pages.append("	<Pages>")
             kwargs['PageCount'] = len(kwargs.get('Pages'))
             for i in range(kwargs.get('PageCount')):
@@ -65,9 +65,15 @@ class Helper:
                 if not page.get('Type'):
                     page['Type'] = 'FrontCover' if i == 0 else 'Story'
 
-                item = '		<Page DoublePage="True"' if get_key_value(page.get('DoublePage', False)) == 'Yes' else '		<Page'
+                items = ['		<Page']
+                if get_key_value(page.get('DoublePage', False)) == 'Yes':
+                    items.append('DoublePage="True"')
+                if page.get('Bookmark'):
+                    items.append(f'Bookmark="{page.get("Bookmark")}"')
+                if page.get('Key'):
+                    items.append(f'Key="{page.get("Key")}"')
                 pages.append(
-                    item + ' Image="{image}" ImageHeight="{height}" ImageSize="{size}" ImageWidth="{width}" Type="{type}" />'.format(
+                    ' '.join(items) + ' Image="{image}" ImageHeight="{height}" ImageSize="{size}" ImageWidth="{width}" Type="{type}" />'.format(
                         double="False" if get_key_value(page.get('DoublePage', False)) == 'No' else "True",
                         image=i,
                         height=properties.height,
