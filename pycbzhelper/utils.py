@@ -4,13 +4,10 @@ from typing import Union
 import unicodedata
 
 
-def get_key_value(_value) -> str:
-    if isinstance(_value, str):
-        if _value in ['YesAndRightToLeft', 'Yes', 'No']:
-            return _value
-    elif isinstance(_value, bool):
-        return 'Yes' if _value else 'No'
-    return _value
+def get_key_value(value: Union[str, bool]) -> str:
+    if isinstance(value, bool):
+        return "Yes" if value else "No"
+    return value
 
 
 def delete_none(_dict: dict) -> dict:
@@ -39,9 +36,9 @@ def slugify(value: Union[str, int], allow_unicode: bool = False) -> str:
     """
     value = str(value)
     if allow_unicode:
-        value = unicodedata.normalize('NFKC', value)
+        value = unicodedata.normalize("NFKC", value)
     else:
-        value = unicodedata.normalize('NFKD', value).encode('ascii', 'ignore').decode('ascii')
+        value = unicodedata.normalize("NFKD", value).encode("ascii", "ignore").decode("ascii")
     # value = re.sub(r'[^\w\s-]', '', value.lower())
     # return re.sub(r'[-\s]+', '-', value).strip('-_')
     return value

@@ -1,5 +1,5 @@
 class PyCBZHelperException(Exception):
-    """Exceptions used by pycbzhelper."""
+    """Exceptions used by PyCBZHelper."""
 
 
 class InvalidKeyValue(PyCBZHelperException):
@@ -10,8 +10,8 @@ class MissingPageFile(PyCBZHelperException):
     """No page available."""
 
 
-class InvalidFilePermission(PyCBZHelperException):
-    """Unable to delete existing file."""
+class InvalidFileExtension(PyCBZHelperException):
+    """Invalid file extension."""
 
 
 class FileNotFound(PyCBZHelperException):

@@ -1,40 +1,64 @@
-# pycbzhelper
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
-[![Release](https://img.shields.io/github/release-date/hyugogirubato/pycbzhelper?style=plastic)](https://github.com/hyugogirubato/pycbzhelper/releases)
-![Total Downloads](https://img.shields.io/github/downloads/hyugogirubato/pycbzhelper/total.svg?style=plastic)
+# PyCBZHelper
 
-Python library to create a cbz file with metadata.
+[![License](https://img.shields.io/github/license/hyugogirubato/pycbzhelper)](https://github.com/hyugogirubato/pycbzhelper/blob/master/LICENSE)
+[![Release](https://img.shields.io/github/release-date/hyugogirubato/pycbzhelper)](https://github.com/hyugogirubato/pycbzhelper/releases)
+[![Latest Version](https://img.shields.io/pypi/v/pycbzhelper)](https://pypi.org/project/pycbzhelper/)
 
-# Usage
+PyCBZHelper is a Python library for creating CBZ (Comic Book Zip) files with metadata. It provides functionality to
+generate a CBZ file from a list of image pages and associated comic book metadata.
 
-### Basic Usage
+## Features
 
-```python
->>> import os
->>> from pycbzhelper import Helper
->>> metadata = {
->>>     "Title": "T1 - Arrête de me chauffer, Nagatoro",
->>>     "Series": "Arrête de me chauffer, Nagatoro",
->>>     "Number": "1",
->>>     "Count": 8,
->>>     "Volume": 1
->>>     ...
->>> }
->>> ...
->>> helper = Helper(metadata)
->>> helper.save_cbz(
-...     path=os.path.join("eBooks", "Arrête de me chauffer, Nagatoro"),
-...     file="T1 - Arrête de me chauffer, Nagatoro",
-...     clear=False,
-...     replace=True
-... )
-```
+- Create CBZ files from images.
+- Generate ComicInfo.xml metadata.
+- Support for various metadata fields.
+- Handle page files from local disk or web URLs.
+- Automatic cleanup of temporary files.
 
-# Installation
+## Installation
 
-To install, you can either clone the repository and run `python setup.py install`
+You can install PyCBZHelper using pip:
 
-## About
-- Graphical metadata editing software [here](https://github.com/comictagger/comictagger)
-- Standard ComicInfo file structure information [here](https://github.com/Kussie/ComicInfoStandard)
-- New version of ComicInfo file structure [here](https://github.com/anansi-project/comicinfo)
+````shell
+pip install pycbzhelper
+````
+
+## Usage
+
+Here's a basic example of how to use PyCBZHelper:
+
+````python
+from pycbzhelper import Helper
+from pathlib import Path
+
+PARENT = Path(__name__).resolve().parent
+
+if __name__ == "__main__":
+    # Define metadata for the comic
+    metadata = {
+        "Title": "My Comic",
+        "Series": "Comic Series",
+        "Number": "1",
+        "Pages": [
+            {"File": PARENT / "image1.jpg"},
+            {"File": PARENT / "image2.jpg"},
+        ]
+        # Add more metadata fields here
+    }
+
+    # Define the path to the output CBZ file
+    output_path = PARENT / "output.cbz"
+
+    # Create an instance of the Helper class
+    helper = Helper(metadata)
+
+    # Create the CBZ file
+    helper.create_cbz(output_path)
+````
+
+For more information on how to use PyCBZHelper, please refer to
+the [documentation](https://github.com/hyugogirubato/pycbzhelper/blob/master/docs/schema).
+
+### License
+
+This project is licensed under the [GPL v3 License](https://github.com/hyugogirubato/pycbzhelper/blob/master/LICENSE).

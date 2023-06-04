@@ -1,5 +1,3 @@
-import os
-import pathlib
 import shutil
 import zipfile
 
@@ -7,133 +5,147 @@ import requests
 from json2xml import json2xml
 from langcodes import Language
 from PIL import Image
+from pathlib import Path
 
 from pycbzhelper.comicinfo import KEYS_STRING, KEYS_INT, KEYS_SPECIAL, KEYS_AGE, KEYS_FORMAT, KEYS_PAGE_TYPE
-from pycbzhelper.exceptions import InvalidKeyValue, MissingPageFile, InvalidFilePermission, FileNotFound
-from pycbzhelper.utils import get_key_value, delete_none, slugify
+from pycbzhelper.exceptions import InvalidKeyValue, MissingPageFile, FileNotFound, InvalidFileExtension
+from pycbzhelper.utils import get_key_value, delete_none
+
+TMP = Path.home().resolve() / ".cbzhelper"
 
 
 class Helper:
 
     def __init__(self, kwargs):
-        self._files = []
-        self.metadata = self._get_metadata(kwargs)
+        self._pages = []
+        self.comic_info = self._comic_info(kwargs)
 
-    def _get_metadata(self, kwargs) -> str:
-        # NOTE: Check metadata
+    def _comic_info(self, kwargs) -> str:
         for key in KEYS_STRING:
-            if kwargs.get(key) and not isinstance(kwargs.get(key), str):
-                raise InvalidKeyValue(f"ERROR: Key must be string: {key}")
+            value = kwargs.get(key)
+            if value is not None and not isinstance(value, str):
+                raise InvalidKeyValue(f"Key must be string: {key}")
 
         for key in KEYS_INT:
-            if kwargs.get(key) and not isinstance(kwargs.get(key), int):
-                raise InvalidKeyValue(f"ERROR: Key must be integer: {key}")
+            value = kwargs.get(key)
+            if value is not None and not isinstance(value, int):
+                raise InvalidKeyValue(f"Key must be integer: {key}")
 
         for key in KEYS_SPECIAL:
-            if kwargs.get(key):
-                if key == 'BlackAndWhite' and get_key_value(kwargs.get(key)) not in ['Yes', 'No']:
-                    raise InvalidKeyValue(f"ERROR: Key must be boolean: {key}")
-                elif key == 'Manga' and get_key_value(kwargs.get(key)) not in ['YesAndRightToLeft', 'Yes', 'No']:
-                    raise InvalidKeyValue(f"ERROR: Key must be boolean or special boolean: {key}")
-                elif key == 'AgeRating' and kwargs.get(key) not in KEYS_AGE:
-                    raise InvalidKeyValue(f"ERROR: Key must be special age: {key}")
-                elif key == 'LanguageISO' and not Language.get(kwargs.get(key)).is_valid():
-                    raise InvalidKeyValue(f"ERROR: Key must be ISO language: {key}")
-                elif key == 'Format' and kwargs.get(key) not in KEYS_FORMAT:
-                    raise InvalidKeyValue(f"ERROR: Key must be special format: {key}")
-                elif key == 'Pages':
-                    if isinstance(kwargs.get(key), list):
-                        for page in kwargs.get(key):
-                            if not page.get('File') or not isinstance(page.get('File'), str) or not os.path.exists(page.get('File')):
-                                raise InvalidKeyValue(f"ERROR: Key must be existing string path: {key}")
-                            if page.get('Type') and not page.get('Type') in KEYS_PAGE_TYPE:
-                                raise InvalidKeyValue("ERROR: Key must be special type: Type")
-                            if page.get('DoublePage') and get_key_value(page.get('DoublePage')) not in ['Yes', 'No']:
-                                raise InvalidKeyValue("ERROR: Key must be boolean: DoublePage")
+            value = kwargs.get(key)
+            if value is not None:
+                if key == "BlackAndWhite" and get_key_value(value) not in ["Yes", "No"]:
+                    raise InvalidKeyValue(f"Key must be boolean: {key}")
+                elif key == "Manga" and get_key_value(value) not in ["YesAndRightToLeft", "Yes", "No"]:
+                    raise InvalidKeyValue(f"Key must be boolean or special boolean: {key}")
+                elif key == "AgeRating" and value not in KEYS_AGE:
+                    raise InvalidKeyValue(f"Key must be special age: {key}")
+                elif key == "LanguageISO" and not Language.get(value).is_valid():
+                    raise InvalidKeyValue(f"Key must be ISO language: {key}")
+                elif key == "Format" and value not in KEYS_FORMAT:
+                    raise InvalidKeyValue(f"Key must be special format: {key}")
+                elif key == "Pages":
+                    if isinstance(value, list):
+                        for file in value:
+                            page_file = file.get("File")
+                            if isinstance(page_file, Path):
+                                if not page_file.is_file():
+                                    raise FileNotFound("File does not exist.")
+                            elif isinstance(page_file, str):
+                                if not page_file.startswith("http"):
+                                    raise InvalidKeyValue(f"Key must be an existing file path: {key}")
+                            else:
+                                raise InvalidKeyValue(f"Key must be an existing file path: {key}")
+
+                            page_type = file.get("Type")
+                            if page_type and page_type not in KEYS_PAGE_TYPE:
+                                raise InvalidKeyValue("Key must be special type: Type")
+                            page_double = file.get("DoublePage")
+                            if page_double and get_key_value(page_double) not in ["Yes", "No"]:
+                                raise InvalidKeyValue("Key must be boolean: DoublePage")
                     else:
-                        raise InvalidKeyValue(f"ERROR: Key must be a list: {key}")
+                        raise InvalidKeyValue(f"Key must be a list: {key}")
 
-        # NOTE: Set metadata
-        pages = []
-        if kwargs.get('Pages'):
-            # [{'File': 'FILE_PATH', 'Type': 'FrontCover', 'DoublePage': False, 'Bookmark': '', 'Key': ''}]
-            pages.append("	<Pages>")
-            kwargs['PageCount'] = len(kwargs.get('Pages'))
-            for i in range(kwargs.get('PageCount')):
-                page = kwargs.get('Pages')[i]
-                if isinstance(page['File'], bytes) or (isinstance(page['File'], str) and page['File'].startswith('https://')):
-                    file = os.path.join("tmp", f"page-{i:03d}.jpg")
-                    with open(file, mode="wb") as f:
-                        f.write(page['File'] if isinstance(page['File'], bytes) else requests.get(url=page['File']).content)
-                        f.close()
-                    page['File'] = file
+        xml_pages = []
+        pages = kwargs.get("Pages") or []
+        if len(pages) > 0:
+            # [{"File": "FILE_PATH", "Type": "FrontCover", "DoublePage": False, "Bookmark": "", "Key": ""}]
+            kwargs["PageCount"] = len(pages)
+            xml_pages.append("	<Pages>")
 
-                if not os.path.exists(page['File']):
-                    raise FileNotFound(f"ERROR: Source file is invalid: {page['File']}")
+            for i, file in enumerate(pages):
+                page_file = file["File"]
+                if isinstance(page_file, str):
+                    r = requests.get(page_file)
+                    r.raise_for_status()
+                    content = r.content
+                else:
+                    content = page_file.read_bytes()
 
-                properties = Image.open(page['File'])
-                self._files.append(page['File'])
-                if not page.get('Type'):
-                    page['Type'] = 'FrontCover' if i == 0 else 'Story'
+                page_file = TMP / f"page-{i:03d}.jpg"
+                page_file.parent.mkdir(parents=True, exist_ok=True)
+                page_file.write_bytes(content)
+                self._pages.append(page_file)
 
-                items = ['		<Page']
-                if get_key_value(page.get('DoublePage', False)) == 'Yes':
+                properties = Image.open(page_file)
+                page_type = file.get("Type") or "FrontCover" if i == 0 else "Story"
+
+                items = ["		<Page"]
+                page_double = get_key_value(file.get("DoublePage", False))
+                if page_double == "Yes":
                     items.append('DoublePage="True"')
-                if page.get('Bookmark'):
-                    items.append(f'Bookmark="{page.get("Bookmark")}"')
-                if page.get('Key'):
-                    items.append(f'Key="{page.get("Key")}"')
-                pages.append(
-                    ' '.join(items) + ' Image="{image}" ImageHeight="{height}" ImageSize="{size}" ImageWidth="{width}" Type="{type}" />'.format(
-                        double="False" if get_key_value(page.get('DoublePage', False)) == 'No' else "True",
+
+                page_bookmark = file.get("Bookmark")
+                if page_bookmark:
+                    items.append(f'Bookmark="{page_bookmark}"')
+
+                page_key = file.get("Key")
+                if page_key:
+                    items.append(f'Key="{page_key}"')
+
+                xml_pages.append(
+                    " ".join(
+                        items) + ' Image="{image}" ImageHeight="{height}" ImageSize="{size}" ImageWidth="{width}" Type="{type}"/>'.format(
+                        double=str(page_double == "Yes"),
                         image=i,
                         height=properties.height,
                         size=len(properties.fp.read()),
                         width=properties.width,
-                        type=page['Type']
-                    )
-                )
-            pages.append("	</Pages>")
-            del kwargs['Pages']
-        pages.append("</ComicInfo>")
+                        type=page_type
+                    ))
+            xml_pages.append("	</Pages>")
+        xml_pages.append("</ComicInfo>")
+        kwargs.pop("Pages", None)
 
-        json_data = {}
+        dict_data = {}
         for key in KEYS_STRING + KEYS_INT + KEYS_SPECIAL:
-            json_data[key] = get_key_value(kwargs.get(key))
+            dict_data[key] = get_key_value(kwargs.get(key))
 
-        xml_data = json2xml.Json2xml(delete_none(json_data), wrapper="ComicInfo", pretty=True, attr_type=False, item_wrap=False).to_xml()
+        xml_data = json2xml.Json2xml(delete_none(dict_data), wrapper="ComicInfo", pretty=True, attr_type=False, item_wrap=False).to_xml()
+
         if not xml_data:
-            xml_data = '\n'.join(['<?xml version="1.0" ?>', '<ComicInfo>', '</ComicInfo>'])
-            print('WARNING: No metadata to create.')
+            xml_data = "\n".join(['<?xml version="1.0" ?>', "<ComicInfo>", "</ComicInfo>"])
+            print("WARNING: No metadata to create.")
         xml_data = xml_data.replace('<?xml version="1.0" ?>', '<?xml version="1.0" encoding="utf-8"?>')
-        xml_data = xml_data.replace('</ComicInfo>', '\n'.join(pages))
+        xml_data = xml_data.replace("</ComicInfo>", "\n".join(xml_pages))
         return xml_data.strip()
 
-    def save_cbz(self, path: str, file: str, clear: bool = False, replace: bool = True) -> None:
-        if len(self._files) == 0:
-            raise MissingPageFile('ERROR: No pages available.')
+    def create_cbz(self, path: Path) -> None:
+        if not len(self._pages) > 0:
+            raise MissingPageFile("No pages available.")
+        if path.suffix != ".cbz":
+            raise InvalidFileExtension("Invalid file extension.")
 
-        output = os.path.join(path, f"{slugify(file, allow_unicode=False)}.cbz")
-        if not os.path.exists(path):
-            os.makedirs(path)
-        if os.path.exists(output) and not replace:
-            raise InvalidFilePermission('ERROR: File already exists. The replace option is not enabled.')
-        elif os.path.exists(output):
-            os.remove(output)
-
+        path.parent.mkdir(parents=True, exist_ok=True)
+        cbz = zipfile.ZipFile(path, "w", compression=zipfile.ZIP_STORED)
         clear_path = []
-        cbz = zipfile.ZipFile(output, 'w', compression=zipfile.ZIP_STORED)
-        for i in range(len(self._files)):
-            if os.path.dirname(self._files[i]) not in clear_path:
-                clear_path.append(os.path.dirname(self._files[i]))
-            with open(self._files[i], mode='rb') as f:
-                extension = pathlib.Path(self._files[i]).suffix
-                cbz.writestr(f"page-{i + 1:03d}.{'.jpg' if extension == '' else extension}", data=f.read())
-                f.close()
-        cbz.writestr('ComicInfo.xml', data=self.metadata.encode('utf-8'))
+
+        for i, page in enumerate(self._pages):
+            clear_path.append(page)
+            cbz.writestr(f"page-{i + 1:03d}{page.suffix}", data=page.read_bytes())
+
+        cbz.writestr("ComicInfo.xml", data=self.comic_info.encode("utf-8"))
         cbz.close()
-        print(f"INFO: File create: {output}")
-        if clear:
-            for path in clear_path:
-                shutil.rmtree(path)
-                print(f"INFO: Folder deleted: {path}")
+
+        self._pages = []
+        shutil.rmtree(TMP)
