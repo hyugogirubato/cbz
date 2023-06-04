@@ -1,6 +1,6 @@
 # PyCBZHelper
 
-[![License](https://img.shields.io/github/license/hyugogirubato/pycbzhelper)](https://github.com/hyugogirubato/pycbzhelper/blob/master/LICENSE)
+[![License](https://img.shields.io/github/license/hyugogirubato/pycbzhelper)](https://github.com/hyugogirubato/pycbzhelper/blob/main/LICENSE)
 [![Release](https://img.shields.io/github/release-date/hyugogirubato/pycbzhelper)](https://github.com/hyugogirubato/pycbzhelper/releases)
 [![Latest Version](https://img.shields.io/pypi/v/pycbzhelper)](https://pypi.org/project/pycbzhelper/)
 
@@ -57,8 +57,8 @@ if __name__ == "__main__":
 ````
 
 For more information on how to use PyCBZHelper, please refer to
-the [documentation](https://github.com/hyugogirubato/pycbzhelper/blob/master/docs/schema).
+the [documentation](https://github.com/hyugogirubato/pycbzhelper/blob/main/docs/schema).
 
 ### License
 
-This project is licensed under the [GPL v3 License](https://github.com/hyugogirubato/pycbzhelper/blob/master/LICENSE).
+This project is licensed under the [GPL v3 License](https://github.com/hyugogirubato/pycbzhelper/blob/main/LICENSE).
