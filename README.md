@@ -59,6 +59,15 @@ if __name__ == "__main__":
 For more information on how to use PyCBZHelper, please refer to
 the [documentation](https://github.com/hyugogirubato/pycbzhelper/blob/main/docs/schema).
 
+### Exceptions
+
+The following exceptions can be raised by PyCBZHelper:
+
+- `InvalidKeyValue`: Raised when a key value is invalid.
+- `MissingPageFile`: Raised when no page files are available.
+- `InvalidFileExtension`: Raised when an invalid file extension is used.
+- `FileNotFound`: Raised when the specified source file is not found.
+
 ### License
 
 This project is licensed under the [GPL v3 License](https://github.com/hyugogirubato/pycbzhelper/blob/main/LICENSE).
