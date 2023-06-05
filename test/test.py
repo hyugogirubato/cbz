@@ -7,7 +7,7 @@ PARENT = Path(__file__).resolve().parent
 if __name__ == "__main__":
     pages = []
     for i in range(11):
-        pages.append({"File": (PARENT / "docs" / "images" / f"page-{i:03d}.jpg")})
+        pages.append({"File": (PARENT / "images" / f"page-{i:03d}.jpg")})
 
     metadata = {
         "Title": "T1 - Arrête de me chauffer, Nagatoro",
