@@ -3,7 +3,7 @@ KEYS_STRING = [
     "Summary", "Notes", "Writer", "Penciller", "Inker", "Colorist",
     "Letterer", "CoverArtist", "Editor", "Publisher", "Imprint", "Genre",
     "Web", "Characters", "Teams", "Locations", "ScanInformation",
-    "StoryArc", "SeriesGroup", "CommunityRating"
+    "StoryArc", "SeriesGroup", "CommunityRating", "Tags"
 ]
 
 KEYS_INT = [
