@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="pycbzhelper",
-    version="3.1.1",
+    version="3.1.2",
     author="hyugogirubato",
     author_email="hyugogirubato@gmail.com",
     description="Python library for creating CBZ files with metadata.",
