@@ -9,7 +9,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed missing `Tag` key, thanks to @RivMt
+- Fixed missing `Tags` key, thanks to @RivMt
 
 ## [3.1.1] - 2023-06-04
 
