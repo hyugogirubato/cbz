@@ -17,7 +17,7 @@ CBZ is a Python package designed to facilitate the creation, manipulation, and e
 
 ## Installation
 
-To install the CBZ Library, you can use pip:
+To install the CBZ library, you can use pip:
 
 ```bash
 pip install cbz
