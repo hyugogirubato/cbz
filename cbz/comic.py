@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import io
 import json
 import zipfile
+from io import BytesIO
 from typing import Union
 
 import xmltodict
@@ -97,7 +97,7 @@ class ComicInfo:
         raise NotImplemented
 
     def pack(self) -> bytes:
-        zip_buffer = io.BytesIO()
+        zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_STORED) as zip_file:
             zip_file.writestr(
                 'ComicInfo.xml',
