@@ -1,5 +1,7 @@
 from enum import Enum
 
+xml_name = "ComicInfo.xml"
+
 
 class YesNo(Enum):
     UNKNOWN = 'Unknown'
