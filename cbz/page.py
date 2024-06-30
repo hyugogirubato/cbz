@@ -16,20 +16,19 @@ from cbz.constants import PageType
 class PageInfo:
 
     def __init__(self, content: bytes, **kwargs):
-        image = Image.open(BytesIO(content))
-
-        self.suffix = f'.{image.format.lower()}'
-        self.content = content
-        self.__info = {
-            # 'Image': 0,
-            'Type': PageType(kwargs.get('type', PageType.STORY)),
-            'DoublePage': bool(kwargs.get('double', False)),
-            'ImageSize': len(content),
-            'Key': str(kwargs.get('key', '')),
-            'Bookmark': str(kwargs.get('bookmark', '')),
-            'ImageWidth': int(image.width),
-            'ImageHeight': int(image.height)
-        }
+        with Image.open(BytesIO(content)) as image:
+            self.suffix = f'.{image.format.lower()}'
+            self.content = content
+            self.__info = {
+                # 'Image': 0,
+                'Type': PageType(kwargs.get('type', PageType.STORY)),
+                'DoublePage': bool(kwargs.get('double', False)),
+                'ImageSize': len(content),
+                'Key': str(kwargs.get('key', '')),
+                'Bookmark': str(kwargs.get('bookmark', '')),
+                'ImageWidth': int(image.width),
+                'ImageHeight': int(image.height)
+            }
 
     def dumps(self) -> dict:
         return utils.dumps(self.__info)
