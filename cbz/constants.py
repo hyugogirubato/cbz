@@ -1,4 +1,5 @@
 from enum import Enum
+from langcodes import Language
 
 xml_name = "ComicInfo.xml"
 
@@ -100,3 +101,64 @@ class Format(Enum):
     WEB_COMIC = 'Web Comic'
     # YEAR_ONE = 'Year 1'
     YEAR_ONE = 'Year One'
+
+
+class ValidRating(float):
+    def __init__(self, val):
+        assert -1 <= float(val) <= 5, f'Rating must be between 0 and 5, input {val}'
+        super(ValidRating, self).__init__()
+
+
+class ValidLanguage(str):
+    def __init__(self, val):
+        if val and not Language.get(str(val)).is_valid():
+            raise ValueError(f'Invalid {val} language')
+        super(ValidLanguage, self).__init__()
+
+
+FIELDS = (
+    # model: (key, xml key): (variable name, (expected type, second expected type,...))
+    # in case of multiple expected formats, value cast to first type in tuple
+    (("title", "Title"), ("title", (str,))),
+    (("series", "Series"), ("series", (str,))),
+    (("number", "Number"), ("number", (str, int, float))),
+    (("count", "Count"), ("count", (int,))),
+    (("volume", "Volume"), ("volume", (int,))),
+    (("alternate_series", "AlternateSeries"), ("alternate_series", (str,))),
+    (("alternate_number", "AlternateNumber"), ("alternate_number", (str, int, float))),
+    (("alternate_count", "AlternateCount"), ("alternate_count", (int,))),
+    (("summary", "Summary"), ("summary", (str,))),
+    (("notes", "Notes"), ("notes", (str,))),
+    (("year", "Year"), ("year", (int,))),
+    (("month", "Month"), ("month", (int,))),
+    (("day", "Day"), ("day", (int,))),
+    (("writer", "Writer"), ("writer", (str,))),
+    (("penciller", "Penciller"), ("penciller", (str,))),
+    (("inker", "Inker"), ("inker", (str,))),
+    (("colorist", "Colorist"), ("colorist", (str,))),
+    (("letterer", "Letterer"), ("letterer", (str,))),
+    (("cover_artist", "CoverArtist"), ("cover_artist", (str,))),
+    (("editor", "Editor"), ("editor", (str,))),
+    (("translator", "Translator"), ("translator", (str,))),
+    (("publisher", "Publisher"), ("publisher", (str,))),
+    (("imprint", "Imprint"), ("imprint", (str,))),
+    (("genre", "Genre"), ("genre", (str,))),
+    (("tags", "Tags"), ("tags", (str,))),
+    (("web", "Web"), ("web", (str,))),
+    (("format", "Format"), ("format", (Format, str))),
+    (("ean", "EAN"), ("ean", (str,))),
+    (("black_white", "BlackAndWhite"), ("black_white", (YesNo, str))),
+    (("manga", "Manga"), ("manga", (Manga, str))),
+    (("characters", "Characters"), ("characters", (str,))),
+    (("teams", "Teams"), ("teams", (str,))),
+    (("locations", "Locations"), ("locations", (str,))),
+    (("scan_information", "ScanInformation"), ("scan_information", (str,))),
+    (("story_arc", "StoryArc"), ("story_arc", (str,))),
+    (("story_arc_number", "StoryArcNumber"), ("story_arc_number", (str,))),
+    (("series_group", "SeriesGroup"), ("series_group", (str,))),
+    (("age_rating", "AgeRating"), ("age_rating", (AgeRating, str))),
+    (("main_character_or_team", "MainCharacterOrTeam"), ("main_character_or_team", (str,))),
+    (("review", "Review"), ("review", (str,))),
+    (("language_iso", "LanguageISO"), ("language_iso", (ValidLanguage, str))),
+    (("community_rating", "CommunityRating"), ("community_rating", (ValidRating, float, int, str))),
+)
