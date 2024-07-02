@@ -118,3 +118,60 @@ class ComicInfo(ComicModel):
         result = zip_buffer.getvalue()
         zip_buffer.close()
         return result
+
+    def get_page(self, index: int) -> PageInfo:
+        """
+        Get page by index
+        :param index:
+        :return:
+        """
+        return self.__pages[index]
+
+    def show_page(self, index: int) -> None:
+        """
+        Display page by index
+        :param index:
+        :return:
+        """
+        self.__pages[index].show()
+
+    def delete_page(self, index: int) -> PageInfo:
+        """
+        Delete page by index
+        :param index:
+        :return: deleted page
+        """
+        return self.__pages.pop(index)
+
+    def add_page(self, page: PageInfo) -> list[PageInfo]:
+        """
+        Add new page to the book
+        :param page:
+        :return: new list of pages
+        """
+        self.__pages.append(page)
+        return self.__pages
+
+    def insert_page(self, index: int, page: PageInfo) -> list[PageInfo]:
+        """
+        Add new page to position
+        :param page:
+        :param index:
+        :return:
+        """
+        self.__pages.insert(index, page)
+        return self.__pages
+
+    def get_pages_count(self) -> int:
+        """
+        Get count of pages
+        :return:
+        """
+        return len(self.__pages)
+
+    def get_all_pages(self) -> list[PageInfo]:
+        """
+        Get all pages of book
+        :return:
+        """
+        return self.__pages

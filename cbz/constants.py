@@ -162,3 +162,15 @@ FIELDS = (
     (("language_iso", "LanguageISO"), ("language_iso", (ValidLanguage, str))),
     (("community_rating", "CommunityRating"), ("community_rating", (ValidRating, float, int, str))),
 )
+
+PAGE_FIELDS = (
+    # model: (key, xml key): (variable name, (expected type, second expected type,...))
+    # in case of multiple expected formats, value cast to first type in tuple
+    (("type", "Type"), ("type", (PageType, str))),
+    (("double", "DoublePage"), ("double", (bool,))),
+    (("key", "Key"), ("key", (str,))),
+    (("bookmark", "Bookmark"), ("bookmark", (str,))),
+    (("image_size", "ImageSize"), ("_image_size", (int,))),
+    (("image_width", "ImageWidth"), ("_image_width", (int,))),
+    (("image_height", "ImageHeight"), ("_image_height", (int,))),
+)
