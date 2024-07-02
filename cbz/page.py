@@ -22,7 +22,7 @@ class PageInfo(PageModel):
     def content(self) -> bytes:
         """
         content getter
-        :return:
+        :return: image content
         """
         return self._content
 
