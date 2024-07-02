@@ -4,6 +4,7 @@ import json
 import zipfile
 from io import BytesIO
 from pathlib import Path
+
 from typing import Union
 
 import xmltodict
@@ -12,6 +13,7 @@ from cbz import utils
 from cbz.constants import xml_name
 from cbz.models import ComicModel
 from cbz.page import PageInfo
+from cbz.ui import show_in_tk
 
 
 class ComicInfo(ComicModel):
@@ -31,6 +33,13 @@ class ComicInfo(ComicModel):
     @classmethod
     def from_pages(cls, pages: [PageInfo], **kwargs) -> ComicInfo:
         return cls(pages, **kwargs)
+
+    def show(self):
+        """
+        display cbz for preview, after call open ui with info and pages and wait for close preview windows
+        :return:
+        """
+        show_in_tk(self.title, self.__pages, utils.dumps(self._get()))
 
     @classmethod
     def from_cbz(cls, path: Union[Path, str]) -> ComicInfo:
@@ -104,7 +113,6 @@ class ComicInfo(ComicModel):
                 xml_name,
                 xmltodict.unparse({'ComicInfo': self.dumps()}, pretty=True).encode('utf-8')
             )
-
             for i, page in enumerate(self.__pages):
                 zip_file.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
         result = zip_buffer.getvalue()
