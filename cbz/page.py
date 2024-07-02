@@ -68,3 +68,12 @@ class PageInfo(PageModel):
         """
         with Image.open(BytesIO(self.content)) as image:
             image.show()
+
+    def save(self, path: Union[Path, str]):
+        """
+        Save page to file
+        :param path:
+        :return:
+        """
+        with Path(path).open(mode='wb') as f:
+            f.write(self.content)

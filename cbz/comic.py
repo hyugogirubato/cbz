@@ -175,3 +175,12 @@ class ComicInfo(ComicModel):
         :return:
         """
         return self.__pages
+
+    def save_page(self, index: int, path: Union[Path, str]) -> None:
+        """
+        Save page to the file
+        :param index: page index
+        :param path: path to new file, str or Path
+        :return:
+        """
+        self.__pages[index].save(path)
