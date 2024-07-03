@@ -3,35 +3,45 @@ from __future__ import annotations
 import base64
 import json
 from io import BytesIO
-from typing import Union
-
 from pathlib import Path
+from typing import Union
 
 from PIL import Image
 
 from cbz import utils
-from cbz.constants import PageType
+from cbz.models import PageModel
 
 
-class PageInfo:
+class PageInfo(PageModel):
 
     def __init__(self, content: bytes, **kwargs):
-        with Image.open(BytesIO(content)) as image:
+        super(PageInfo, self).__init__(kwargs)
+        self.content = content
+
+    @property
+    def content(self) -> bytes:
+        """
+        content getter
+        :return: image content
+        """
+        return self._content
+
+    @content.setter
+    def content(self, value) -> None:
+        """
+        Set image info by current content
+        :param value:
+        :return:
+        """
+        with Image.open(BytesIO(value)) as image:
             self.suffix = f'.{image.format.lower()}'
-            self.content = content
-            self.__info = {
-                # 'Image': 0,
-                'Type': PageType(kwargs.get('type', PageType.STORY)),
-                'DoublePage': bool(kwargs.get('double', False)),
-                'ImageSize': len(content),
-                'Key': str(kwargs.get('key', '')),
-                'Bookmark': str(kwargs.get('bookmark', '')),
-                'ImageWidth': int(image.width),
-                'ImageHeight': int(image.height)
-            }
+            self._image_width = int(image.width)
+            self._image_height = int(image.height)
+        self._image_size = len(value)
+        self._content = value
 
     def dumps(self) -> dict:
-        return utils.dumps(self.__info)
+        return utils.dumps(self._get())
 
     def __repr__(self) -> str:
         return json.dumps(self.dumps(), indent=2)
@@ -50,3 +60,20 @@ class PageInfo:
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
         with Path(path).open(mode='rb') as f:
             return cls(f.read(), **kwargs)
+
+    def show(self) -> None:
+        """
+        display this page
+        :return:
+        """
+        with Image.open(BytesIO(self.content)) as image:
+            image.show()
+
+    def save(self, path: Union[Path, str]):
+        """
+        Save page to file
+        :param path:
+        :return:
+        """
+        with Path(path).open(mode='wb') as f:
+            f.write(self.content)

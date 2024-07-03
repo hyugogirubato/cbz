@@ -1,5 +1,5 @@
-from cbz.constants import YesNo, Manga, AgeRating, Format, FIELDS
-from typing import Any
+from cbz.constants import YesNo, Manga, AgeRating, Format, PageType, FIELDS, PAGE_FIELDS
+from cbz.utils import _get, _set
 
 
 class ComicModel:
@@ -48,35 +48,25 @@ class ComicModel:
     _filepath: str = ""
 
     def __init__(self, kwargs: dict):
-        """
-        Set class variables from input dictionary, check types of input and cast values to correct type
-        :param kwargs: dictionary of input data
-        """
-        for kwarg_key, kwarg_value in kwargs.items():
-            for keys, values in FIELDS:
-                if kwarg_key in keys:
-                    variable, types = values
-                    if hasattr(self, variable):
-                        setattr(self, variable, self._check_type(kwarg_key, kwarg_value, types))
-                        break
-
-    @staticmethod
-    def _check_type(key: str, value: Any, types: tuple) -> Any:
-        """
-        Check type of value, and cast this value to first type of the types
-        :param key: name of key of variable (using only for best error information)
-        :param value: value for a check
-        :param types: list of the allowed types
-        :return: value with new type
-        """
-        if not isinstance(value, types):
-            raise ValueError(
-                f"Unexpected type of {key}, got: {type(value).__name__}, expected: {[i.__name__ for i in types]}")
-        return types[0](value)
+        _set(self, FIELDS, kwargs)
 
     def _get(self) -> dict:
-        """
-        Create dictionary from variables by FIELDS
-        :return: dictionary with variables value
-        """
-        return {key[1]: self._check_type(value[0], getattr(self, value[0]), value[1]) for key, value in FIELDS}
+        return _get(self, FIELDS)
+
+
+class PageModel:
+    suffix: str
+    _content: bytes
+    type: PageType = PageType.STORY
+    double: bool = False
+    _image_size: int = 0
+    key: str = ""
+    bookmark: str = ""
+    _image_width: int = 0
+    _image_height: int = 0
+
+    def __init__(self, kwargs: dict):
+        _set(self, PAGE_FIELDS, kwargs)
+
+    def _get(self) -> dict:
+        return _get(self, PAGE_FIELDS)

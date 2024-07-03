@@ -4,6 +4,7 @@ import json
 import zipfile
 from io import BytesIO
 from pathlib import Path
+
 from typing import Union
 
 import xmltodict
@@ -12,6 +13,7 @@ from cbz import utils
 from cbz.constants import xml_name
 from cbz.models import ComicModel
 from cbz.page import PageInfo
+from cbz.ui import show_in_tk
 
 
 class ComicInfo(ComicModel):
@@ -31,6 +33,13 @@ class ComicInfo(ComicModel):
     @classmethod
     def from_pages(cls, pages: [PageInfo], **kwargs) -> ComicInfo:
         return cls(pages, **kwargs)
+
+    def show(self):
+        """
+        display cbz for preview, after call open ui with info and pages and wait for close preview windows
+        :return:
+        """
+        show_in_tk(self.title, self.__pages, utils.dumps(self._get()))
 
     @classmethod
     def from_cbz(cls, path: Union[Path, str]) -> ComicInfo:
@@ -104,9 +113,74 @@ class ComicInfo(ComicModel):
                 xml_name,
                 xmltodict.unparse({'ComicInfo': self.dumps()}, pretty=True).encode('utf-8')
             )
-
             for i, page in enumerate(self.__pages):
                 zip_file.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
         result = zip_buffer.getvalue()
         zip_buffer.close()
         return result
+
+    def get_page(self, index: int) -> PageInfo:
+        """
+        Get page by index
+        :param index:
+        :return:
+        """
+        return self.__pages[index]
+
+    def show_page(self, index: int) -> None:
+        """
+        Display page by index
+        :param index:
+        :return:
+        """
+        self.__pages[index].show()
+
+    def delete_page(self, index: int) -> PageInfo:
+        """
+        Delete page by index
+        :param index:
+        :return: deleted page
+        """
+        return self.__pages.pop(index)
+
+    def add_page(self, page: PageInfo) -> list[PageInfo]:
+        """
+        Add new page to the book
+        :param page:
+        :return: new list of pages
+        """
+        self.__pages.append(page)
+        return self.__pages
+
+    def insert_page(self, index: int, page: PageInfo) -> list[PageInfo]:
+        """
+        Add new page to position
+        :param page:
+        :param index:
+        :return:
+        """
+        self.__pages.insert(index, page)
+        return self.__pages
+
+    def get_pages_count(self) -> int:
+        """
+        Get count of pages
+        :return:
+        """
+        return len(self.__pages)
+
+    def get_all_pages(self) -> list[PageInfo]:
+        """
+        Get all pages of book
+        :return:
+        """
+        return self.__pages
+
+    def save_page(self, index: int, path: Union[Path, str]) -> None:
+        """
+        Save page to the file
+        :param index: page index
+        :param path: path to new file, str or Path
+        :return:
+        """
+        self.__pages[index].save(path)
