@@ -15,8 +15,7 @@ def _check_type(key: str, value: Any, types: tuple) -> Any:
     :return: value with new type
     """
     if not isinstance(value, types):
-        raise ValueError(
-            f"Unexpected type of {key}, got: {type(value).__name__}, expected: {[i.__name__ for i in types]}")
+        raise ValueError(f'Unexpected type of {key}, got: {type(value).__name__}, expected: {[i.__name__ for i in types]}')
     return types[0](value)
 
 

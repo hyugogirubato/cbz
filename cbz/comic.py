@@ -23,7 +23,7 @@ class ComicInfo(ComicModel):
 
     def dumps(self) -> dict:
         return utils.dumps(self._get() | {
-            "Pages": [{'Image': i, **page.dumps()} for i, page in enumerate(self.__pages)],
+            'Pages': [{'Image': i, **page.dumps()} for i, page in enumerate(self.__pages)],
             'PageCount': len(self.__pages)
         })
 
@@ -65,7 +65,7 @@ class ComicInfo(ComicModel):
         with Path(path).open(mode='rb') as f:
             with zipfile.ZipFile(f, 'r', zipfile.ZIP_STORED) as zip_file:
                 xml_file = zip_file.open(xml_name)
-                info = xmltodict.parse(xml_file.read()).get("ComicInfo", {})
+                info = xmltodict.parse(xml_file.read()).get('ComicInfo', {})
                 xml_file.close()
         return info
 
@@ -87,22 +87,22 @@ class ComicInfo(ComicModel):
         Save changes to opened from file or already saved to file comic
         :return:
         """
-        assert self._filepath, "Use to_cbz or from_cbz before save changes"
+        assert self._filepath, 'Use to_cbz or from_cbz before save changes'
         self.to_cbz(self._filepath)
 
     @staticmethod
     def __unpack(file_path: Path) -> dict:
         with zipfile.ZipFile(file_path, 'r', zipfile.ZIP_STORED) as zip_file:
             _files = zip_file.namelist()
-            assert xml_name in _files, f"{xml_name} not found in: {zip_file.filename}"
+            assert xml_name in _files, f'{xml_name} not found in: {zip_file.filename}'
             xml_file = zip_file.open(xml_name)
-            info = xmltodict.parse(xml_file.read()).get("ComicInfo", {})
+            info = xmltodict.parse(xml_file.read()).get('ComicInfo', {})
             xml_file.close()
             _files.remove(xml_name)
-            info["pages"] = list()
+            info['pages'] = list()
             for filename in _files:
                 page_file = zip_file.open(filename)
-                info["pages"].append(PageInfo.loads(page_file.read()))
+                info['pages'].append(PageInfo.loads(page_file.read()))
                 page_file.close()
         return info
 
