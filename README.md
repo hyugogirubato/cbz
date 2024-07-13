@@ -6,6 +6,9 @@
 
 CBZ is a Python package designed to facilitate the creation, manipulation, and extraction of comic book archive files in the CBZ format. It allows users to programmatically generate CBZ files from a collection of images, add metadata to the archives, and unpack existing CBZ files. This library is ideal for comic book enthusiasts, archivists, and developers working on applications involving digital comic book distributions.
 
+> [!WARNING]  
+> The library is currently being rewritten following the latest PR, a new version will arrive soon, partially changing its use.
+
 ## Features
 
 - **Create CBZ Files**: Pack a series of images into a CBZ file with ease.
