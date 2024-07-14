@@ -10,6 +10,7 @@ from pathlib import Path
 from cbz.comic import ComicInfo
 from cbz.page import PageInfo
 from cbz.utils import readable_size
+import os
 
 
 class Player:
@@ -52,8 +53,13 @@ class Player:
         # Set initial window size
         self.root.geometry(self._get_initial_geometry())
 
-        # Set window icon
-        self.root.iconbitmap(Path(__file__).parent / 'cbz.ico')
+        # Check if windows or linux
+        if os.name == 'nt':
+            # Set window icon
+            self.root.iconbitmap(Path(__file__).parent / 'cbz.ico')
+        else:
+            # Set window icon
+            self.root.wm_iconphoto(True, tk.PhotoImage(file=Path(__file__).parent / 'cbz.png'))
 
         # Create main frame for content
         self.main_frame = ttk.Frame(self.root)
