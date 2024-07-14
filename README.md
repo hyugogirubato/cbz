@@ -2,9 +2,6 @@
 
 CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ format. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata, and display comics using a built-in player.
 
-> [!WARNING]  
-> The library is currently being rewritten following the latest PR, a new version will arrive soon, partially changing its use.
-
 ## Features
 
 - 🚀 Seamless Installation via [pip](#installation)
