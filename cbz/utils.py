@@ -1,41 +1,79 @@
 from enum import Enum
-from typing import Any
 
 
-def dumps(data: dict) -> dict:
-    return {k: v.value if isinstance(v, Enum) else v for k, v in data.items() if v and v != -1 and v != 'Unknown'}
-
-
-def _check_type(key: str, value: Any, types: tuple) -> Any:
+def default_attr(value: any) -> any:
     """
-    Check type of value, and cast this value to first type of the types
-    :param key: name of key of variable (using only for best error information)
-    :param value: value for a check
-    :param types: list of the allowed types
-    :return: value with new type
+    Provides a default value based on the expected type of an attribute.
+
+    Args:
+        value (any): Expected type or class of the attribute.
+
+    Returns:
+        any: Default value appropriate for the specified type or class.
+            - For Enum types: Returns the 'UNKNOWN' member if available, otherwise the first member.
+            - For int or float: Returns -1.
+            - For bool: Returns False.
+            - For str: Returns an empty string.
+            - For other types: Invokes the callable (assuming it's a function or callable object).
     """
-    if not isinstance(value, types):
-        raise ValueError(f'Unexpected type of {key}, got: {type(value).__name__}, expected: {[i.__name__ for i in types]}')
-    return types[0](value)
+    if issubclass(value, Enum):
+        keys = [i.name for i in list(value)]
+        return value['UNKNOWN' if 'UNKNOWN' in keys else 'STORY']
+    elif value in (int, float):
+        return -1
+    elif value == bool:
+        return False
+    elif value == str:
+        return ''
+    else:
+        return value()
 
 
-def _get(obj: Any, fields: tuple) -> dict:
+def verify_attr(expected_type: any, key: str, value: any) -> None:
     """
-    Create dictionary from variables by PAGE_FIELDS
-    :return: dictionary with variables value
+    Verifies if the provided value matches the expected type.
+
+    Args:
+        expected_type (any): Expected type of the attribute.
+        key (str): Name of the attribute.
+        value (any): Value to be verified against the expected type.
+
+    Raises:
+        TypeError: If the provided value does not match the expected type.
     """
-    return {key[1]: _check_type(value[0], getattr(obj, value[0]), value[1]) for key, value in fields}
+    if not isinstance(value, expected_type):
+        raise TypeError(f'Expected type {expected_type} for attribute "{key}", but got {type(value)}')
 
 
-def _set(obj: Any, fields: tuple, data_dict: dict) -> None:
+def repr_attr(value: any) -> any:
     """
-    Set class variables from input dictionary, check types of input and cast values to correct type
-    :param kwargs: dictionary of input data
+    Provides a representation of the attribute's value.
+
+    Args:
+        value (any): Value of the attribute.
+
+    Returns:
+        any: Representation of the attribute's value.
+            - For Enum types: Returns the value of the Enum.
+            - For other types: Returns the value itself.
     """
-    for kwarg_key, kwarg_value in data_dict.items():
-        for keys, values in fields:
-            if kwarg_key in keys:
-                variable, types = values
-                if hasattr(obj, variable):
-                    setattr(obj, variable, _check_type(kwarg_key, kwarg_value, types))
-                    break
+    if isinstance(value, Enum):
+        return value.value
+    return value
+
+
+def readable_size(size: int, decimal: int = 2) -> str:
+    """
+    Converts a file size in bytes to a human-readable string format.
+
+    Args:
+        size (int): The size in bytes.
+        decimal (int): Number of decimal places to display (default is 2).
+
+    Returns:
+        str: Human-readable string representation of the size.
+    """
+    for unit in ['B', 'KB', 'MB', 'GB', 'TB']:
+        if size < 1024:
+            return f'{size:.{decimal}f} {unit}'
+        size /= 1024

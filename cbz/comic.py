@@ -1,186 +1,210 @@
 from __future__ import annotations
 
-import json
 import zipfile
+from enum import Enum
 from io import BytesIO
-from pathlib import Path
-
 from typing import Union
+from functools import cache
 
+from pathlib import Path
 import xmltodict
 
-from cbz import utils
-from cbz.constants import xml_name
+from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
 from cbz.models import ComicModel
 from cbz.page import PageInfo
-from cbz.ui import show_in_tk
+from cbz.utils import repr_attr
 
 
 class ComicInfo(ComicModel):
-    def __init__(self, pages: [PageInfo], **kwargs):
-        self.__pages = pages
-        super(ComicInfo, self).__init__(kwargs)
+    """
+    ComicInfo class that represents the comic book information and pages.
+    """
 
-    def dumps(self) -> dict:
-        return utils.dumps(self._get() | {
-            'Pages': [{'Image': i, **page.dumps()} for i, page in enumerate(self.__pages)],
-            'PageCount': len(self.__pages)
-        })
+    def __init__(self, pages: list[PageInfo], **kwargs):
+        """
+        Initialize the ComicInfo instance with pages and additional attributes.
 
-    def __repr__(self) -> str:
-        return json.dumps(self.dumps(), indent=2)
+        Args:
+            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            **kwargs: Additional attributes for the comic.
+
+        Attributes:
+            pages (list[PageInfo]): Stores the comic pages.
+        """
+        super(ComicInfo, self).__init__(**kwargs)
+        self.pages = pages
 
     @classmethod
-    def from_pages(cls, pages: [PageInfo], **kwargs) -> ComicInfo:
-        return cls(pages, **kwargs)
+    def from_pages(cls, pages: list[PageInfo], **kwargs) -> ComicInfo:
+        """
+        Create a ComicInfo instance from pages and additional attributes.
 
-    def show(self):
+        Args:
+            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            **kwargs: Additional attributes for the comic.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
         """
-        display cbz for preview, after call open ui with info and pages and wait for close preview windows
-        :return:
-        """
-        show_in_tk(self.title, self.__pages, utils.dumps(self._get()))
+        return cls(pages, **kwargs)
 
     @classmethod
     def from_cbz(cls, path: Union[Path, str]) -> ComicInfo:
         """
-        read comic from cbz/cbx file
-        :param path: path to the file
-        :return: Exemplar of ComicInfo class
+        Create a ComicInfo instance from a CBZ file.
+
+        Args:
+            path (Union[Path, str]): Path to the CBZ file.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+
+        Raises:
+            ValueError: If the provided path is not a Path object or a string.
         """
         if not isinstance(path, (Path, str)):
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        exemplar = cls(**cls.__unpack(Path(path)))
-        exemplar._filepath = path
-        return exemplar
+        return cls.__unpack(path)
 
     @staticmethod
-    def get_info(path: Union[Path, str]) -> dict:
+    def __unpack(path: Path) -> ComicInfo:
         """
-        Get from file only info, without images loading
-        :return: dictionary with comic info
-        """
-        if not isinstance(path, (Path, str)):
-            raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        with Path(path).open(mode='rb') as f:
-            with zipfile.ZipFile(f, 'r', zipfile.ZIP_STORED) as zip_file:
-                xml_file = zip_file.open(xml_name)
-                info = xmltodict.parse(xml_file.read()).get('ComicInfo', {})
-                xml_file.close()
-        return info
+        Unpack a CBZ file and create a ComicInfo instance.
 
-    def to_cbz(self, path: Union[Path, str]) -> None:
-        """
-        Save comic to file
-        :param path: path for a save (will be overwritten if already exists)
-        :return:
-        """
-        if not isinstance(path, (Path, str)):
-            raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        self._filepath = path
-        new_file = self.pack()
-        with Path(path).open(mode='wb') as f:
-            f.write(new_file)
+        Args:
+            path (Path): Path to the CBZ file.
 
-    def save(self) -> None:
+        Returns:
+            ComicInfo: An instance of ComicInfo.
         """
-        Save changes to opened from file or already saved to file comic
-        :return:
-        """
-        assert self._filepath, 'Use to_cbz or from_cbz before save changes'
-        self.to_cbz(self._filepath)
 
-    @staticmethod
-    def __unpack(file_path: Path) -> dict:
-        with zipfile.ZipFile(file_path, 'r', zipfile.ZIP_STORED) as zip_file:
-            _files = zip_file.namelist()
-            assert xml_name in _files, f'{xml_name} not found in: {zip_file.filename}'
-            xml_file = zip_file.open(xml_name)
-            info = xmltodict.parse(xml_file.read()).get('ComicInfo', {})
-            xml_file.close()
-            _files.remove(xml_name)
-            info['pages'] = list()
-            for filename in _files:
-                page_file = zip_file.open(filename)
-                info['pages'].append(PageInfo.loads(page_file.read()))
-                page_file.close()
-        return info
+        def __info(items: dict, fields: dict) -> dict:
+            """
+            Extract and convert field information from the provided items and fields.
 
-    def pack(self) -> bytes:
-        zip_buffer = BytesIO()
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_STORED) as zip_file:
-            zip_file.writestr(
-                xml_name,
-                xmltodict.unparse({'ComicInfo': self.dumps()}, pretty=True).encode('utf-8')
+            Args:
+                items (dict): Dictionary containing item attributes.
+                fields (dict): Dictionary containing field mappings and types.
+
+            Returns:
+                dict: Dictionary with extracted and converted field information.
+            """
+            content = {}
+            for key, (field_key, field_type) in fields.items():
+                if field_key in items:
+                    content[key] = field_type(items[field_key])
+            return content
+
+        pages = []
+
+        with zipfile.ZipFile(path, 'r', zipfile.ZIP_STORED) as zf:
+            names = zf.namelist()
+            comic_info = {}
+
+            if XML_NAME in names:
+                with zf.open(XML_NAME, 'r') as f:
+                    comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
+                names.remove(XML_NAME)
+
+            comic = __info(
+                items=comic_info,
+                fields=COMIC_FIELDS
             )
-            for i, page in enumerate(self.__pages):
-                zip_file.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
-        result = zip_buffer.getvalue()
+
+            pages_info = comic_info.get('Pages', [])
+            for i, name in enumerate(names):
+                suffix = Path(name).suffix
+                if suffix:
+                    assert suffix in IMAGE_FORMAT, f'Unsupported image format: {suffix}'
+                    with zf.open(name, 'r') as f:
+                        page_info = {}
+                        if i < len(pages_info):
+                            page_info = __info(
+                                items=pages_info[i],
+                                fields=PAGE_FIELDS
+                            )
+                        pages.append(PageInfo.loads(data=f.read(), **page_info))
+
+        return ComicInfo.from_pages(pages=pages, **comic)
+
+    def get_info(self) -> dict:
+        """
+        Get the comic information as a dictionary.
+
+        Returns:
+            dict: Dictionary containing comic information.
+        """
+
+        def __info(items: dict, fields: dict) -> dict:
+            """
+            Extract and convert field information from the provided items and fields.
+
+            Args:
+                items (dict): Dictionary containing item attributes.
+                fields (dict): Dictionary containing field mappings and types.
+
+            Returns:
+                dict: Dictionary with extracted and converted field information.
+            """
+            content = {}
+            for key, (field_key, _) in fields.items():
+                item = items.get(key)
+                if item and not (isinstance(item, Enum) and item.name == 'UNKNOWN' or item == -1):
+                    content[field_key] = repr_attr(item)
+            return content
+
+        comic_info = __info(
+            items={k: v for k, v in self.__dict__.items() if not k.startswith('_')},
+            fields=COMIC_FIELDS)
+
+        comic_info['Pages'] = []
+        for page in self.pages:
+            page_info = __info(
+                items={k: v for k, v in page.__dict__.items() if not k.startswith('_')},
+                fields=PAGE_FIELDS)
+            comic_info['Pages'].append(page_info)
+
+        return comic_info
+
+    @cache
+    def pack(self) -> bytes:
+        """
+        Pack the comic information and pages into a CBZ file format.
+
+        Returns:
+            bytes: Bytes representing the packed CBZ file.
+        """
+        zip_buffer = BytesIO()
+        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_STORED) as zf:
+            zf.writestr(
+                XML_NAME,
+                xmltodict.unparse({'ComicInfo': self.get_info()}, pretty=True).encode('utf-8')
+            )
+            for i, page in enumerate(self.pages):
+                zf.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
+
+        packed = zip_buffer.getvalue()
         zip_buffer.close()
-        return result
+        return packed
 
-    def get_page(self, index: int) -> PageInfo:
+    def show(self) -> None:
         """
-        Get page by index
-        :param index:
-        :return:
-        """
-        return self.__pages[index]
+        Display the comic using the Player class.
 
-    def show_page(self, index: int) -> None:
+        This method initializes a Player instance with the comic information
+        and starts the player to show the comic.
         """
-        Display page by index
-        :param index:
-        :return:
-        """
-        self.__pages[index].show()
+        # Avoid circular import
+        from cbz.player import Player
+        player = Player(self)
+        player.run()
 
-    def delete_page(self, index: int) -> PageInfo:
+    def save(self, path: Union[Path, str]) -> None:
         """
-        Delete page by index
-        :param index:
-        :return: deleted page
-        """
-        return self.__pages.pop(index)
+        Save the comic book as a CBZ file to the specified path.
 
-    def add_page(self, page: PageInfo) -> list[PageInfo]:
+        Args:
+            path (Union[Path, str]): Path where the CBZ file will be saved.
         """
-        Add new page to the book
-        :param page:
-        :return: new list of pages
-        """
-        self.__pages.append(page)
-        return self.__pages
-
-    def insert_page(self, index: int, page: PageInfo) -> list[PageInfo]:
-        """
-        Add new page to position
-        :param page:
-        :param index:
-        :return:
-        """
-        self.__pages.insert(index, page)
-        return self.__pages
-
-    def get_pages_count(self) -> int:
-        """
-        Get count of pages
-        :return:
-        """
-        return len(self.__pages)
-
-    def get_all_pages(self) -> list[PageInfo]:
-        """
-        Get all pages of book
-        :return:
-        """
-        return self.__pages
-
-    def save_page(self, index: int, path: Union[Path, str]) -> None:
-        """
-        Save page to the file
-        :param index: page index
-        :param path: path to new file, str or Path
-        :return:
-        """
-        self.__pages[index].save(path)
+        with Path(path).open(mode='wb') as f:
+            f.write(self.pack())
