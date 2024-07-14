@@ -157,3 +157,5 @@ This software is licensed under the terms of [MIT License](https://github.com/hy
 You can find a copy of the license in the LICENSE file in the root folder.
 
 * * * 
+
+© hyugogirubato 2024
