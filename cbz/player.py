@@ -78,6 +78,7 @@ class Player:
         self._init_summary_text()
 
         # Display initial page content
+        # TODO: Support scrollable image and/or zoom when it is too large for the screen (eg: webtoon)
         self.show_page()
 
         # Bind keys for navigation and window resize

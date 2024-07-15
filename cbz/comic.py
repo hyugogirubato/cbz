@@ -7,6 +7,8 @@ from typing import Union
 from functools import cache
 
 from pathlib import Path
+
+import fitz
 import xmltodict
 
 from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
@@ -64,10 +66,51 @@ class ComicInfo(ComicModel):
         """
         if not isinstance(path, (Path, str)):
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        return cls.__unpack(path)
+        return cls.__unpack_zip(path)
+
+    @classmethod
+    def from_pdf(cls, path: Union[Path, str]) -> ComicInfo:
+        """
+        Create a ComicInfo instance from a PDF file.
+
+        Args:
+            path (Union[Path, str]): Path to the PDF file.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+
+        Raises:
+            ValueError: If the provided path is not a Path object or a string.
+        """
+        if not isinstance(path, (Path, str)):
+            raise ValueError(f'Expecting Path object or path string, got {path!r}')
+        return cls.__unpack_pdf(path)
 
     @staticmethod
-    def __unpack(path: Path) -> ComicInfo:
+    def __unpack_pdf(path: Path) -> ComicInfo:
+        """
+        Unpack a PDF file and create a ComicInfo instance.
+
+        Args:
+            path (Path): Path to the PDF file.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+        """
+        pages: list[PageInfo] = []
+        with fitz.open(path) as pf:
+            for element in pf:
+                # Check if the page has images
+                images = element.get_images(full=True)
+                for i, image in enumerate(images):
+                    base = pf.extract_image(image[0])
+                    pages.append(PageInfo.loads(data=base['image']))
+
+        assert pages, 'No valid images present in file'
+        return ComicInfo.from_pages(pages=pages)
+
+    @staticmethod
+    def __unpack_zip(path: Path) -> ComicInfo:
         """
         Unpack a CBZ file and create a ComicInfo instance.
 
