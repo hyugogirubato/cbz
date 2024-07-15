@@ -123,10 +123,10 @@ class Player:
             scale_factor = min(scale_width, scale_height)
 
             # Calculate new dimensions
-            initial_width = int(first_page.image_width * scale_factor)
+            initial_width = int(first_page.image_width * scale_factor * 0.94)
             initial_height = int(first_page.image_height * scale_factor)
         else:
-            initial_width = int(available_width)
+            initial_width = int(available_height * 0.63)
             initial_height = int(available_height)
 
         # Calculate initial position to center the window on the screen
