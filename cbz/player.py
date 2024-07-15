@@ -88,6 +88,9 @@ class Player:
         self.previous_width = self.root.winfo_width()
         self.previous_height = self.root.winfo_height()
 
+        # Initialize resize timer
+        self.resize_timer = None
+
     def _get_window_title(self) -> str:
         """
         Get the window title based on the comic series and title.
@@ -287,8 +290,13 @@ class Player:
         if event.width != self.previous_width or event.height != self.previous_height:
             self.previous_width = event.width
             self.previous_height = event.height
-            # Update the image display on canvas when the window size changes
-            self.show_page()
+
+            # Cancel any existing resize timer
+            if self.resize_timer:
+                self.root.after_cancel(self.resize_timer)
+
+            # Set a new timer to call show_page after a delay
+            self.resize_timer = self.root.after(100, self.show_page)
 
     def run(self) -> None:
         """
