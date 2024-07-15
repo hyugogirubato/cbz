@@ -22,6 +22,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed the player margins.
 - Automatically detect the player size based on the smallest image.
 
+### New Contributors
+
+- [flolep2607](https://github.com/flolep2607)
+
 ## [3.3.0] - 2024-07-14
 
 ### Added

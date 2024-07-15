@@ -150,6 +150,7 @@ comic_from_cbz = ComicInfo.from_cbz('/path/to/your_comic.cbz')
 <a href="https://github.com/OleskiiPyskun"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/75667382?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="OleskiiPyskun"/></a>
 <a href="https://github.com/domenicoblanco"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/9018104?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="domenicoblanco"/></a>
 <a href="https://github.com/RivMt"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40086827?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="RivMt"/></a>
+<a href="https://github.com/flolep2607"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/24566964?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="flolep2607"/></a>
 
 ## Licensing
 
