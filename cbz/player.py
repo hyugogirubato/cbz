@@ -257,7 +257,7 @@ class Player:
         self.root.bind('<Right>', lambda event: self.one_next())
 
         # Bind Ctrl+C to exit application
-        self.root.bind('<Control-c>', lambda event: self.root.quit())
+        self.root.bind('<Control-q>', lambda event: self.root.quit())
 
         # Bind the configure event to handle window resize
         self.root.bind('<Configure>', lambda event: self.on_window(event))
