@@ -3,6 +3,7 @@ import tkinter as tk
 from io import BytesIO
 from tkinter import ttk
 from tkinter.constants import DISABLED, NORMAL
+from ctypes import windll
 
 from PIL import Image, ImageTk
 from pathlib import Path
@@ -11,6 +12,8 @@ from cbz.comic import ComicInfo
 from cbz.page import PageInfo
 from cbz.utils import readable_size
 import os
+
+PARENT = Path(__file__).parent
 
 
 class Player:
@@ -53,13 +56,12 @@ class Player:
         # Set initial window size
         self.root.geometry(self._get_initial_geometry())
 
-        # Check if windows or linux
+        # Check if windows or linux for window icon
         if os.name == 'nt':
-            # Set window icon
-            self.root.iconbitmap(Path(__file__).parent / 'cbz.ico')
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID('cbz.player')
+            self.root.iconbitmap(PARENT / 'cbz.ico')
         else:
-            # Set window icon
-            self.root.wm_iconphoto(True, tk.PhotoImage(file=Path(__file__).parent / 'cbz.png'))
+            self.root.wm_iconphoto(True, tk.PhotoImage(file=PARENT / 'cbz.png'))
 
         # Create main frame for content
         self.main_frame = ttk.Frame(self.root)
@@ -93,7 +95,7 @@ class Player:
             str: Window title.
         """
         if self.comic_info.series and self.comic_info.title:
-            return f"{self.comic_info.series} - {self.comic_info.title}"
+            return f'{self.comic_info.series} - {self.comic_info.title}'
         return self.comic_info.title or self.__class__.__name__
 
     def _get_initial_geometry(self) -> str:
