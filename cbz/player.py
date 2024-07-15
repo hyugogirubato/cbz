@@ -115,16 +115,23 @@ class Player:
 
         # Calculate scaling factors for width and height
         if self.comic_info.pages:
-            first_page = self.comic_info.pages[0]
-            scale_width = available_width / first_page.image_width
-            scale_height = available_height / first_page.image_height
+            # Get the minimum dimensions from all pages
+            image_width = self.comic_info.pages[0].image_width
+            image_height = self.comic_info.pages[0].image_height
+            for page in self.comic_info.pages[1:]:
+                if page.image_width <= image_width and page.image_height <= image_height:
+                    image_width = page.image_width
+                    image_height = page.image_height
+
+            scale_width = available_width / image_width
+            scale_height = available_height / image_height
 
             # Choose the smaller scaling factor to maintain proportions
             scale_factor = min(scale_width, scale_height)
 
             # Calculate new dimensions
-            initial_width = int(first_page.image_width * scale_factor * 0.94)
-            initial_height = int(first_page.image_height * scale_factor)
+            initial_width = int(image_width * scale_factor * 0.94)
+            initial_height = int(image_height * scale_factor)
         else:
             initial_width = int(available_height * 0.63)
             initial_height = int(available_height)
