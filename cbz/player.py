@@ -10,7 +10,7 @@ from pathlib import Path
 
 from cbz.comic import ComicInfo
 from cbz.page import PageInfo
-from cbz.utils import readable_size
+from cbz.utils import readable_size, ico_to_png
 import os
 
 PARENT = Path(__file__).parent
@@ -56,12 +56,8 @@ class Player:
         # Set initial window size
         self.root.geometry(self._get_initial_geometry())
 
-        # Check if windows or linux for window icon
-        if os.name == 'nt':
-            windll.shell32.SetCurrentProcessExplicitAppUserModelID('cbz.player')
-            self.root.iconbitmap(PARENT / 'cbz.ico')
-        else:
-            self.root.wm_iconphoto(True, tk.PhotoImage(file=PARENT / 'cbz.png'))
+        # Set the application icon
+        self._set_icon()
 
         # Create main frame for content
         self.main_frame = ttk.Frame(self.root)
@@ -90,6 +86,20 @@ class Player:
 
         # Initialize resize timer
         self.resize_timer = None
+
+    def _set_icon(self) -> None:
+        """
+        Set the application icon for the window.
+        """
+        image_path = PARENT / 'cbz.ico'
+        if os.name == 'nt':
+            # Set the application ID and icon on Windows
+            windll.shell32.SetCurrentProcessExplicitAppUserModelID('cbz.player')
+            self.root.iconbitmap(image_path)
+        else:
+            # Convert ICO to PNG for other operating systems
+            image = ico_to_png(image_path)
+            self.root.iconphoto(True, tk.PhotoImage(data=image.getvalue()))
 
     def _get_window_title(self) -> str:
         """
@@ -242,7 +252,7 @@ class Player:
         # Resize image
         new_width = int(img.width * scale_factor)
         new_height = int(img.height * scale_factor)
-        img = img.resize((new_width, new_height), Image.LANCZOS)
+        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
         # Set image on canvas
         self.canvas.image = ImageTk.PhotoImage(img)
