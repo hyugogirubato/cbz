@@ -146,7 +146,7 @@ class ComicInfo(ComicModel):
 
             if XML_NAME in names:
                 with zf.open(XML_NAME, 'r') as f:
-                    comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
+                    comic_info = xmltodict.parse(f.read(), force_list=('Pages',)).get('ComicInfo', {})
                 names.remove(XML_NAME)
 
             comic = __info(
