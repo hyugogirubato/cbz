@@ -1,54 +1,9 @@
-import struct
 from enum import Enum
 from io import BytesIO
 
 from PIL import Image
+from PIL.IcoImagePlugin import IcoFile
 from path import Path
-
-
-def extract_ico(path: Path) -> list[Image]:
-    """
-    Extracts all the images from an ICO file.
-
-    Args:
-        path (Path): Path to the ICO file.
-
-    Returns:
-        list[Image]: List of PIL Image objects representing the icons in the ICO file.
-    """
-    # https://stackoverflow.com/questions/74341558/how-do-i-read-a-different-size-of-an-icon-file
-    # https://en.wikipedia.org/wiki/ICO_(file_format)
-    icons = []
-
-    # Constants for ICO file structure
-    ICONDIRSIZE = 6
-    ICONDIRENTRYSIZE = 16
-
-    # Read the entire ICO file content
-    d = path.read_bytes()
-
-    # Extract ICONDIR header
-    hdrReserved, hdrImageType, hdrNumImages = struct.unpack('<HHH', d[:ICONDIRSIZE])
-
-    # Process each image entry in the ICO file
-    for i in range(hdrNumImages):
-        start = ICONDIRSIZE + i * ICONDIRENTRYSIZE
-        ICONDIRENTRY = d[start:start + ICONDIRENTRYSIZE]
-
-        # Unpack ICONDIRENTRY fields
-        width, height, palColours, reserved, planes, bpp, nBytes, offset = struct.unpack('<BBBBHHII', ICONDIRENTRY)
-
-        # Create a new in-memory ICO file with one icon in it
-        hdr = struct.pack('<HHH', hdrReserved, hdrImageType, 1)
-        dirent = struct.pack('<BBBBHHII', width, height, palColours, reserved, planes, bpp, nBytes, ICONDIRSIZE + ICONDIRENTRYSIZE)
-        pxData = d[offset:offset + nBytes]
-        inMemoryICO = BytesIO(hdr + dirent + pxData)
-
-        # Open the image using PIL
-        im = Image.open(inMemoryICO)
-        icons.append(im)
-
-    return icons
 
 
 def default_attr(value: any) -> any:
@@ -139,7 +94,16 @@ def ico_to_png(path: Path) -> BytesIO:
     Returns:
        BytesIO: In-memory PNG file of the largest icon.
     """
-    icons = extract_ico(path)
+    # Open the ICO file and read its content
+    image = Image.open(BytesIO(path.read_bytes()))
+    assert image.format == 'ICO', 'Unsupported image format'
+
+    # Get the ICO file object and find the largest icon size
+    icon: IcoFile = image.ico
+    max_size = max(icon.sizes(), key=lambda x: x[0] + x[1])
+    largest_image = icon.getimage(size=max_size)
+
+    # Save the largest icon as PNG format to an in-memory BytesIO object
     content = BytesIO()
-    icons[-1].save(content, format='PNG')
+    largest_image.save(content, format='PNG')
     return content
