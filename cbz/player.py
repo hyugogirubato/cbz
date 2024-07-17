@@ -1,5 +1,7 @@
 import hashlib
 import tkinter as tk
+import os
+
 from io import BytesIO
 from tkinter import ttk
 from tkinter.constants import DISABLED, NORMAL
@@ -11,9 +13,9 @@ from pathlib import Path
 from cbz.comic import ComicInfo
 from cbz.page import PageInfo
 from cbz.utils import readable_size, ico_to_png
-import os
 
 PARENT = Path(__file__).parent
+CTRL_KEY = 0x4  # Constant for Ctrl key
 
 
 class Player:
@@ -37,6 +39,10 @@ class Player:
         page_index_label (ttk.Label): Label showing the current page index.
         previous_width (int): Previous width of the main window.
         previous_height (int): Previous height of the main window.
+        resize_timer (int or None): Timer ID for handling window resize delay.
+        max_zoom_factor (float or None): Maximum allowable zoom factor based on canvas size and image dimensions.
+        zoom_factor (float or None): Current zoom factor for image display.
+        img_original (PIL.Image.Image or None): Placeholder for the original image to be displayed.
     """
 
     def __init__(self, comic_info: ComicInfo):
@@ -48,6 +54,9 @@ class Player:
         """
         self.comic_info = comic_info
         self.current_page = -1  # Track the current page index
+        self.max_zoom_factor = None  # Maximum allowable zoom factor based on canvas size and image dimensions
+        self.zoom_factor = None  # Initial zoom factor (None means no zoom initially)
+        self.img_original = None  # Placeholder for the original image
 
         # Initialize tkinter window
         self.root = tk.Tk()
@@ -74,7 +83,6 @@ class Player:
         self._init_summary_text()
 
         # Display initial page content
-        # TODO: Support scrollable image and/or zoom when it is too large for the screen (eg: webtoon)
         self.show_page()
 
         # Bind keys for navigation and window resize
@@ -127,6 +135,10 @@ class Player:
         available_width = self.root.winfo_screenwidth() - 2 * margin_width
         available_height = self.root.winfo_screenheight() - 2 * margin_height
 
+        # Default screen size for initialization
+        screen_width = int(available_height * 0.63)
+        screen_height = int(available_height)
+
         # Calculate scaling factors for width and height
         if self.comic_info.pages:
             # Get the minimum dimensions from all pages
@@ -147,8 +159,13 @@ class Player:
             initial_width = int(image_width * scale_factor * 0.94)
             initial_height = int(image_height * scale_factor)
         else:
-            initial_width = int(available_height * 0.63)
-            initial_height = int(available_height)
+            # If no pages are available, default to screen size
+            initial_width = screen_width
+            initial_height = screen_height
+
+        # Ensure that the window's initial width is at least 50% of the screen width
+        if 100 / screen_width * initial_width < 50.0:
+            initial_width = screen_width
 
         # Calculate initial position to center the window on the screen
         x = self.root.winfo_screenwidth() // 2 - initial_width // 2
@@ -189,7 +206,7 @@ class Player:
         self.summary_text.tag_configure('normal', font=('Arial', 12), lmargin1=10, lmargin2=10)
         self.summary_text.config(state=DISABLED)
 
-    def show_page(self):
+    def show_page(self) -> None:
         """
         Display the current page content (either summary or image).
         """
@@ -242,25 +259,39 @@ class Player:
 
         # Display image centered on canvas
         page: PageInfo = self.comic_info.pages[self.current_page]
-        img = Image.open(BytesIO(page.content))
+        self.img_original = Image.open(BytesIO(page.content))
+        self._display_image()
 
-        # Calculate scaling factor
-        scale_width = self.canvas.winfo_width() / img.width
-        scale_height = self.canvas.winfo_height() / img.height
-        scale_factor = min(scale_width, scale_height)
+    def _display_image(self) -> None:
+        """
+        Display the image on the canvas with zooming capabilities.
+        """
+        # Check if zoom factor is not set; initialize zoom factors
+        if not self.zoom_factor:
+            # Determine maximum zoom factor based on canvas size and original image size
+            self.max_zoom_factor = min(
+                self.canvas.winfo_width() / self.img_original.width,
+                self.canvas.winfo_height() / self.img_original.height
+            )
+            self.zoom_factor = self.max_zoom_factor
 
-        # Resize image
-        new_width = int(img.width * scale_factor)
-        new_height = int(img.height * scale_factor)
-        img = img.resize((new_width, new_height), Image.Resampling.LANCZOS)
+        # Calculate new dimensions of the image based on current zoom factor
+        new_width = int(self.img_original.width * self.zoom_factor)
+        new_height = int(self.img_original.height * self.zoom_factor)
+        img = self.img_original.resize((new_width, new_height), Image.Resampling.LANCZOS)
 
-        # Set image on canvas
+        # Convert the resized image to PhotoImage format compatible with Tkinter canvas
         self.canvas.image = ImageTk.PhotoImage(img)
 
-        # Calculate coordinates to center the image on the canvas
-        x = (self.canvas.winfo_width() - new_width) // 2
-        y = (self.canvas.winfo_height() - new_height) // 2
+        # Calculate the position to center the image on the canvas
+        x = max(0, (self.canvas.winfo_width() - new_width) // 2)
+        y = max(0, (self.canvas.winfo_height() - new_height) // 2)
         self.canvas.create_image(x, y, anchor=tk.NW, image=self.canvas.image)
+
+        # Configure the scroll region of the canvas to allow scrolling if image is larger than canvas
+        canvas_width = max(new_width, self.canvas.winfo_width())
+        canvas_height = max(new_height, self.canvas.winfo_height())
+        self.canvas.config(scrollregion=(0, 0, canvas_width, canvas_height))
 
     def _bind_keys(self) -> None:
         """
@@ -270,19 +301,79 @@ class Player:
         self.root.bind('<Left>', lambda event: self.on_previous())
         self.root.bind('<Right>', lambda event: self.one_next())
 
-        # Bind Ctrl+C to exit application
+        # Bind Ctrl+Q to exit application
         self.root.bind('<Control-q>', lambda event: self.root.quit())
-
         # Bind the configure event to handle window resize
         self.root.bind('<Configure>', lambda event: self.on_window(event))
+
+        # Bind mouse wheel events for zooming
+        self.root.bind('<Control-MouseWheel>', self.on_zoom)
+        self.canvas.bind_all("<MouseWheel>", self._on_mouse_wheel)
+        self.canvas.bind_all("<Shift-MouseWheel>", self._on_shift_mouse_wheel)
+
+        # Bind zoom controls to keyboard keys
+        self.root.bind('<KeyPress-plus>', lambda event: self.on_zoom_key(True))
+        self.root.bind('<KeyPress-minus>', lambda event: self.on_zoom_key(False))
+
+    def on_zoom_key(self, positive: bool) -> None:
+        """
+        Handle zooming triggered by keyboard keys ('+' for zoom in, '-' for zoom out).
+
+        Args:
+            positive (bool): True for zoom in, False for zoom out.
+        """
+        # Create a synthetic event object to simulate mouse wheel scrolling
+        event = tk.Event()
+        event.delta = 120 if positive else -120
+        self.on_zoom(event)
+
+    def on_zoom(self, event) -> None:
+        """
+        Handle zooming using Ctrl + Mouse Wheel.
+        """
+        if self.current_page == -1: return
+
+        # Adjust zoom factor based on mouse wheel direction
+        if event.delta > 0:
+            # Increase zoom factor by 10% for zoom in
+            self.zoom_factor *= 1.1
+        elif event.delta < 0:
+            # Decrease zoom factor by 10% for zoom out
+            self.zoom_factor /= 1.1
+
+        # Ensure the zoom-out factor doesn't go below the original image size
+        min_zoom_factor = min(
+            self.canvas.winfo_width() / self.img_original.width,
+            self.canvas.winfo_height() / self.img_original.height
+        )
+
+        if self.zoom_factor < min_zoom_factor:
+            self.zoom_factor = min_zoom_factor
+
+        # Update the displayed image with the new zoom factor
+        self._display_image()
+
+    def _on_mouse_wheel(self, event) -> None:
+        """
+        Handle vertical scroll using Mouse Wheel.
+        """
+        if self.current_page == -1 or (event.state & CTRL_KEY): return
+        self.canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _on_shift_mouse_wheel(self, event) -> None:
+        """
+        Handle horizontal scroll using Shift + Mouse Wheel.
+        """
+        if self.current_page == -1 or (event.state & CTRL_KEY): return
+        self.canvas.xview_scroll(int(-1 * (event.delta / 120)), "units")
 
     def on_previous(self) -> None:
         """
         Navigate to the previous page.
         """
-        if self.current_page > -1:
-            self.current_page -= 1
-            self.show_page()
+        if self.current_page == -1: return
+        self.current_page -= 1
+        self.show_page()
 
     def one_next(self) -> None:
         """
@@ -306,7 +397,23 @@ class Player:
                 self.root.after_cancel(self.resize_timer)
 
             # Set a new timer to call show_page after a delay
-            self.resize_timer = self.root.after(100, self.show_page)
+            self.resize_timer = self.root.after(200, self._on_resize)
+
+    def _on_resize(self) -> None:
+        """
+        Handle resizing of the window and adjust image display accordingly.
+        """
+        if self.current_page == -1: return
+
+        # Reset zoom factor to None if it's equal to the maximum zoom factor
+        if self.zoom_factor == self.max_zoom_factor:
+            self.zoom_factor = None
+
+        # Update the displayed image with the current zoom factor
+        self._display_image()
+
+        # Reset the resize timer
+        self.resize_timer = None
 
     def run(self) -> None:
         """
