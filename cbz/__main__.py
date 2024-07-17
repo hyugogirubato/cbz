@@ -19,7 +19,7 @@ def main() -> None:
 
     # Create ComicInfo object from CBZ file
     try:
-        comic_info = ComicInfo.from_cbz(path=comic_path)
+        comic_info = ComicInfo.from_pdf(comic_path) if comic_path.suffix == '.pdf' else ComicInfo.from_cbz(comic_path)
         # Launch the CBZ player
         comic_info.show()
     except Exception as e:
