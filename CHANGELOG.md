@@ -31,10 +31,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed the taskbar icon for Windows in the player.
 - Fixed the player margins.
 - Automatically detect the player size based on the smallest image.
+- Fix XML parsing for CBZ with one page.
 
 ### New Contributors
 
 - [flolep2607](https://github.com/flolep2607)
+- [gokender](https://github.com/gokender)
 
 ## [3.3.0] - 2024-07-14
 
