@@ -4,15 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.3.2] - Not released
+## [3.3.2] - 2027-07-17
+
+### Added
+
+- Added zoom options for displaying images in the player.
+- Added scroll functionality for image display in the player, especially useful when images are zoomed.
 
 ### Changed
 
-- Simplification of the player icon set.
+- Set a default standard size.
 
 ### Fixed
 
-- Fixed lag when stretching player.
+- Fix lag when stretching player.
+- Fix XML parsing for CBZ files with a single page.
+- Fix image positioning within the player.
+
+### New Contributors
+
+- [gokender](https://github.com/gokender)
 
 ## [3.3.1] - 2024-07-15
 
@@ -31,12 +42,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Fixed the taskbar icon for Windows in the player.
 - Fixed the player margins.
 - Automatically detect the player size based on the smallest image.
-- Fix XML parsing for CBZ with one page.
 
 ### New Contributors
 
 - [flolep2607](https://github.com/flolep2607)
-- [gokender](https://github.com/gokender)
 
 ## [3.3.0] - 2024-07-14
 
@@ -116,6 +125,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial release.
 
+[3.3.2]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.2
 [3.3.1]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.1
 [3.3.0]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.0
 [3.2.0]: https://github.com/hyugogirubato/cbz/releases/tag/v3.2.0
