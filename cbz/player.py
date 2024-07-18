@@ -1,4 +1,3 @@
-import hashlib
 import tkinter as tk
 import os
 
@@ -235,17 +234,16 @@ class Player:
 
         # Display summary for the first page
         infos = self.comic_info.get_info()
-        packed = self.comic_info.pack()
-        infos['Pages'] = len(infos['Pages'])
-        infos['Size'] = readable_size(len(packed), decimal=2)
-        infos['MD5'] = hashlib.md5(packed).hexdigest()
 
         self.summary_text.config(state=NORMAL)
         self.summary_text.delete('1.0', tk.END)
 
         for key, value in infos.items():
-            self.summary_text.insert(tk.END, f'{key}\n', 'bold')
-            self.summary_text.insert(tk.END, f'{value}\n\n', 'normal')
+            if not (key.startswith('@') or key == 'Pages'):
+                if key == 'FileSize':
+                    value = readable_size(value)
+                self.summary_text.insert(tk.END, f'{key}\n', 'bold')
+                self.summary_text.insert(tk.END, f'{value}\n\n', 'normal')
 
         self.summary_text.config(state=DISABLED)
         self.summary_text.place(relwidth=1, relheight=1)
