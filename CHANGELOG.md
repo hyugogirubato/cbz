@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Reference links for XML schema.
 - New information fields in the XML.
+- Support PDF files via `cbzplayer` command.
 
 ### Changed
 
