@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.3] - 2024-07-18
+
+### Added
+
+- Reference links for XML schema.
+- New information fields in the XML.
+
+### Changed
+
+- Removed MD5 display in the player (irrelevant).
+- The displayed size in the player now reflects the total size of all images.
+- Simplified the closing XML `Page` tag.
+- Sorted `Page` keys in order.
+- Updated `ComicInfo.xsd` defining the CBZ standard.
+
+### Fixed
+
+- Fixed the `.jpg` constant preventing the use of certain images.
+- Fixed memory error related to the `pack()` method cache.
+- Fixed saving pages in XML to comply with the standard.
+- Added missing mandatory keys in the XML.
+
 ## [3.3.2] - 2024-07-18
 
 ### Added
@@ -125,6 +147,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial release.
 
+[3.3.3]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.3
 [3.3.2]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.2
 [3.3.1]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.1
 [3.3.0]: https://github.com/hyugogirubato/cbz/releases/tag/v3.3.0
