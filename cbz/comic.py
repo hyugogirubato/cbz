@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import zipfile
+from datetime import datetime
 
 from enum import Enum
 from io import BytesIO
 from typing import Union
-from functools import cache
 
 from pathlib import Path
 
@@ -147,7 +147,7 @@ class ComicInfo(ComicModel):
 
             if XML_NAME in names:
                 with zf.open(XML_NAME, 'r') as f:
-                    comic_info = xmltodict.parse(f.read(), force_list=('Pages',)).get('ComicInfo', {})
+                    comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
                 names.remove(XML_NAME)
 
             comic = __info(
@@ -155,7 +155,7 @@ class ComicInfo(ComicModel):
                 fields=COMIC_FIELDS
             )
 
-            pages_info = comic_info.get('Pages', [])
+            pages_info = comic_info.get('Pages', {}).get('Page', [])
             for i, name in enumerate(names):
                 suffix = Path(name).suffix
                 if suffix:
@@ -201,16 +201,28 @@ class ComicInfo(ComicModel):
             items={k: v for k, v in self.__dict__.items() if not k.startswith('_')},
             fields=COMIC_FIELDS)
 
+        comic_pages = []
         comic_info['Pages'] = []
-        for page in self.pages:
+        for i, page in enumerate(self.pages):
             page_info = __info(
                 items={k: v for k, v in page.__dict__.items() if not k.startswith('_')},
                 fields=PAGE_FIELDS)
-            comic_info['Pages'].append(page_info)
+            page_info['@Image'] = i
+            comic_pages.append(dict(sorted(page_info.items())))
 
+        # https://github.com/anansi-project/rfcs/issues/3#issuecomment-671631676
+        utcnow = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + ''
+        comic_info.update({
+            '@xmlns:xsd': 'http://www.w3.org/2001/XMLSchema',
+            '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
+            'FileSize': comic_info.get('FileSize', sum(p.image_size for p in self.pages)),
+            'FileCreationTime': comic_info.get('FileCreationTime', utcnow),
+            'FileModifiedTime': comic_info.get('FileModifiedTime', utcnow),
+            'PageCount': len(self.pages),
+            'Pages': {'Page': comic_pages}
+        })
         return comic_info
 
-    @cache
     def pack(self) -> bytes:
         """
         Pack the comic information and pages into a CBZ file format.
@@ -220,9 +232,10 @@ class ComicInfo(ComicModel):
         """
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_STORED) as zf:
+            content = xmltodict.unparse({'ComicInfo': self.get_info()}, pretty=True)
             zf.writestr(
                 XML_NAME,
-                xmltodict.unparse({'ComicInfo': self.get_info()}, pretty=True).encode('utf-8')
+                content.replace('></Page>', ' />').encode('utf-8')
             )
             for i, page in enumerate(self.pages):
                 zf.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
