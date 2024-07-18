@@ -202,7 +202,6 @@ class ComicInfo(ComicModel):
             fields=COMIC_FIELDS)
 
         comic_pages = []
-        comic_info['Pages'] = []
         for i, page in enumerate(self.pages):
             page_info = __info(
                 items={k: v for k, v in page.__dict__.items() if not k.startswith('_')},
