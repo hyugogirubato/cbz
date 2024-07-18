@@ -173,3 +173,4 @@ pyrightconfig.json
 ### CBZ ###
 *.cbz
 *.pdf
+*.zip
