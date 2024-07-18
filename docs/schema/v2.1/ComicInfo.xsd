@@ -46,6 +46,13 @@
             <xs:element minOccurs="0" maxOccurs="1" name="CommunityRating" type="Rating"/>
             <xs:element minOccurs="0" maxOccurs="1" default="" name="MainCharacterOrTeam" type="xs:string"/>
             <xs:element minOccurs="0" maxOccurs="1" default="" name="Review" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="Added" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="Released" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="FileSize" type="xs:int"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="FileModifiedTime" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="FileCreationTime" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="BookPrice" type="xs:string"/>
+            <xs:element minOccurs="0" maxOccurs="1" default="" name="CustomValuesStore" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
     <xs:simpleType name="YesNo">
