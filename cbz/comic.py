@@ -202,7 +202,6 @@ class ComicInfo(ComicModel):
             fields=COMIC_FIELDS)
 
         comic_pages = []
-        comic_info['Pages'] = []
         for i, page in enumerate(self.pages):
             page_info = __info(
                 items={k: v for k, v in page.__dict__.items() if not k.startswith('_')},
@@ -211,7 +210,7 @@ class ComicInfo(ComicModel):
             comic_pages.append(dict(sorted(page_info.items())))
 
         # https://github.com/anansi-project/rfcs/issues/3#issuecomment-671631676
-        utcnow = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + ''
+        utcnow = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
         comic_info.update({
             '@xmlns:xsd': 'http://www.w3.org/2001/XMLSchema',
             '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
