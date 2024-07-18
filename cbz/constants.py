@@ -5,7 +5,7 @@ from langcodes import Language
 
 XML_NAME = 'ComicInfo.xml'
 IMAGE_FORMAT = {
-    '.jpeg', ' .jpg',  # Joint Photographic Experts Group
+    '.jpeg', '.jpg',  # Joint Photographic Experts Group
     '.png',  # Portable Network Graphics
     '.gif',  # Graphics Interchange Format
     '.bmp',  # Bitmap Image File
