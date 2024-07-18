@@ -102,6 +102,13 @@ class ComicModel(BaseModel):
     review: str
     language_iso: LanguageISO
     community_rating: Rating
+    added: str
+    released: str
+    file_size: int
+    file_modified_time: str
+    file_creation_time: str
+    book_price: str
+    custom_values_store: str
 
     def __init__(self, **kwargs):
         """

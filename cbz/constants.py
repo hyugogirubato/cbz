@@ -169,15 +169,23 @@ COMIC_FIELDS = {
     'main_character_or_team': ('MainCharacterOrTeam', str),
     'review': ('Review', str),
     'language_iso': ('LanguageISO', LanguageISO),
-    'community_rating': ('CommunityRating', Rating)
+    'community_rating': ('CommunityRating', Rating),
+    'added': ('Added', str),
+    'released': ('Released', str),
+    'file_size': ('FileSize', int),
+    'file_modified_time': ('FileModifiedTime', str),
+    'file_creation_time': ('FileCreationTime', str),
+    'book_price': ('BookPrice', str),
+    'custom_values_store': ('CustomValuesStore', str)
 }
 
 PAGE_FIELDS = {
-    'type': ('Type', PageType),
-    'double': ('DoublePage', bool),
-    'key': ('Key', str),
-    'bookmark': ('Bookmark', str),
-    'image_size': ('ImageSize', int),
-    'image_width': ('ImageWidth', int),
-    'image_height': ('ImageHeight', int)
+    'image': ('@Image', int),
+    'type': ('@Type', PageType),
+    'double': ('@DoublePage', bool),
+    'key': ('@Key', str),
+    'bookmark': ('@Bookmark', str),
+    'image_size': ('@ImageSize', int),
+    'image_width': ('@ImageWidth', int),
+    'image_height': ('@ImageHeight', int)
 }
