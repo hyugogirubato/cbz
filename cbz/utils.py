@@ -3,7 +3,7 @@ from io import BytesIO
 
 from PIL import Image
 from PIL.IcoImagePlugin import IcoFile
-from path import Path
+from pathlib import Path
 
 
 def default_attr(value: any) -> any:
