@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "cbz"
-version = "3.3.4"
+version = "3.3.5"
 description = "CBZ simplifies creating, managing, and viewing comic book files in CBZ format, offering seamless packaging, metadata handling, and built-in viewing capabilities"
 license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
