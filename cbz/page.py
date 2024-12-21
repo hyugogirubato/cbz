@@ -3,7 +3,7 @@ from __future__ import annotations
 import base64
 
 from io import BytesIO
-from typing import Union
+from typing import Union, Optional
 
 from pathlib import Path
 from PIL import Image
@@ -17,15 +17,17 @@ class PageInfo(PageModel):
     Model for representing comic book pages with additional content handling capabilities.
     """
 
-    def __init__(self, content: bytes, **kwargs):
+    def __init__(self, content: bytes, name: Optional[str] = None, **kwargs):
         """
         Initializes a PageInfo instance.
 
         Args:
             content (bytes): The content of the page in bytes.
+            name (Optional[str]): The name of the page (default is None).
             **kwargs: Additional keyword arguments passed to the base class initializer.
         """
         super(PageInfo, self).__init__(**kwargs)
+        self.name = name
         self.content = content
 
     @property
@@ -93,7 +95,9 @@ class PageInfo(PageModel):
         """
         if not isinstance(path, (Path, str)):
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        with Path(path).open(mode='rb') as f:
+        path = Path(path)
+        with path.open(mode='rb') as f:
+            kwargs.setdefault('name', path.name)
             return cls(f.read(), **kwargs)
 
     def show(self) -> None:

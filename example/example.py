@@ -50,7 +50,7 @@ if __name__ == '__main__':
     comic.show()
 
     # Pack the comic book content into a CBZ file format
-    cbz_content = comic.pack()
+    cbz_content = comic.pack(rename=True)
 
     # Define the path where the CBZ file will be saved
     cbz_path = PARENT / f'{comic.title}.cbz'

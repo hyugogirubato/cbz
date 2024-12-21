@@ -222,9 +222,12 @@ class ComicInfo(ComicModel):
         })
         return comic_info
 
-    def pack(self) -> bytes:
+    def pack(self, rename: bool = True) -> bytes:
         """
         Pack the comic information and pages into a CBZ file format.
+
+        Args:
+            rename (bool): Whether to rename pages to a sequential format (e.g., 'page-001.jpg').
 
         Returns:
             bytes: Bytes representing the packed CBZ file.
@@ -237,7 +240,11 @@ class ComicInfo(ComicModel):
                 content.replace('></Page>', ' />').encode('utf-8')
             )
             for i, page in enumerate(self.pages):
-                zf.writestr(f'page-{i + 1:03d}{page.suffix}', page.content)
+                name = page.name
+                # If the page does not have a name or renaming is enabled, generate a sequential name for the page.
+                if not name or rename:
+                    name = f'page-{i + 1:03d}{page.suffix}'
+                zf.writestr(name, page.content)
 
         packed = zip_buffer.getvalue()
         zip_buffer.close()

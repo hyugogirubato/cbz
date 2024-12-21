@@ -132,6 +132,7 @@ class PageModel(BaseModel):
     image_width: int
     image_height: int
     suffix: str
+    name: str
     __content: bytes
 
     def __init__(self, **kwargs):
