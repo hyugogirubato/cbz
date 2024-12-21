@@ -167,6 +167,7 @@ class ComicInfo(ComicModel):
                                 items=pages_info[i],
                                 fields=PAGE_FIELDS
                             )
+                        page_info['name'] = Path(f.name).name
                         pages.append(PageInfo.loads(data=f.read(), **page_info))
 
         return ComicInfo.from_pages(pages=pages, **comic)
