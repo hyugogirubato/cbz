@@ -1,13 +1,13 @@
-import tkinter as tk
 import os
+import tkinter as tk
 
 from io import BytesIO
 from tkinter import ttk
 from tkinter.constants import DISABLED, NORMAL
 from ctypes import windll
+from pathlib import Path
 
 from PIL import Image, ImageTk
-from pathlib import Path
 
 from cbz.comic import ComicInfo
 from cbz.page import PageInfo

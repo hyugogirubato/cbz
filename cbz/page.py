@@ -4,8 +4,8 @@ import base64
 
 from io import BytesIO
 from typing import Union, Optional
-
 from pathlib import Path
+
 from PIL import Image
 
 from cbz.constants import IMAGE_FORMAT

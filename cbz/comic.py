@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 import zipfile
-from datetime import datetime, timezone
 
+from datetime import datetime, timezone
 from enum import Enum
 from io import BytesIO
 from typing import Union
-
 from pathlib import Path
 
 import fitz

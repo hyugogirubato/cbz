@@ -1,9 +1,9 @@
 from enum import Enum
 from io import BytesIO
+from pathlib import Path
 
 from PIL import Image
 from PIL.IcoImagePlugin import IcoFile
-from pathlib import Path
 
 
 def default_attr(value: any) -> any:
