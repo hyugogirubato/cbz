@@ -30,11 +30,11 @@ include = [
 "Changelog" = "https://github.com/hyugogirubato/cbz/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-xmltodict = "^0.13.0"
-langcodes = "^3.4.0"
-Pillow = "^10.4.0"
-PyMuPDF = "^1.24.7"
+python = ">=3.8"
+xmltodict = ">=0.13.0"
+langcodes = ">=3.4.0"
+Pillow = ">=10.4.0"
+PyMuPDF = ">=1.24.7"
 
 [tool.poetry.scripts]
 cbzplayer = "cbz.__main__:main"
