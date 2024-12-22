@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import zipfile
-from datetime import datetime
+from datetime import datetime, timezone
 
 from enum import Enum
 from io import BytesIO
@@ -211,7 +211,7 @@ class ComicInfo(ComicModel):
             comic_pages.append(dict(sorted(page_info.items())))
 
         # https://github.com/anansi-project/rfcs/issues/3#issuecomment-671631676
-        utcnow = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
+        utcnow = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-3] + 'Z'
         comic_info.update({
             '@xmlns:xsd': 'http://www.w3.org/2001/XMLSchema',
             '@xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
