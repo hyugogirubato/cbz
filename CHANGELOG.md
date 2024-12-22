@@ -4,11 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [3.3.6] - No released
+## [3.3.6] - 2024-12-22
 
 ### Added
 
 - Option to not rename the name of image files loaded into pages.
+
+### Fixed
+
+- Removing deprecated datetime api for utcnow.
 
 ## [3.3.5] - 2024-07-22
 
