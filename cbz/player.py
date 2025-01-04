@@ -4,8 +4,12 @@ import tkinter as tk
 from io import BytesIO
 from tkinter import ttk
 from tkinter.constants import DISABLED, NORMAL
-from ctypes import windll
 from pathlib import Path
+
+try:
+    from ctypes import windll
+except ImportError:
+    windll = None  # windll is not available on this platform
 
 from PIL import Image, ImageTk
 
