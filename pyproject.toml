@@ -34,7 +34,7 @@ python = ">=3.8"
 xmltodict = ">=0.13.0"
 langcodes = ">=3.4.0"
 Pillow = ">=10.4.0"
-PyMuPDF = ">=1.24.7"
+pypdf = ">=5.6.1"
 
 [tool.poetry.scripts]
 cbzplayer = "cbz.__main__:main"

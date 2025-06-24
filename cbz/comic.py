@@ -8,7 +8,7 @@ from io import BytesIO
 from typing import Union
 from pathlib import Path
 
-import fitz
+from pypdf import PdfReader
 import xmltodict
 
 from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
@@ -98,13 +98,10 @@ class ComicInfo(ComicModel):
             ComicInfo: An instance of ComicInfo.
         """
         pages: list[PageInfo] = []
-        with fitz.open(path) as pf:
-            for element in pf:
-                # Check if the page has images
-                images = element.get_images(full=True)
-                for i, image in enumerate(images):
-                    base = pf.extract_image(image[0])
-                    pages.append(PageInfo.loads(data=base['image']))
+        reader = PdfReader(path)
+        for page in reader.pages:
+            for image in page.images:
+                pages.append(PageInfo.loads(data=image.data))
 
         assert pages, 'No valid images present in file'
         return ComicInfo.from_pages(pages=pages)
