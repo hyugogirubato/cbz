@@ -5,11 +5,11 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "cbz"
 version = "3.3.7"
-description = "CBZ simplifies creating, managing, and viewing comic book files in CBZ format, offering seamless packaging, metadata handling, and built-in viewing capabilities"
+description = "CBZ simplifies creating, managing, and viewing comic book files in CBZ, CBR, and PDF formats, offering seamless packaging, metadata handling for CBZ/CBR files, and built-in viewing capabilities"
 license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
 readme = "README.md"
-keywords = ["python", "cbz", "ebooks", "manga", "comics", "webtoons"]
+keywords = ["python", "cbz", "cbr", "pdf", "ebooks", "manga", "comics", "webtoons"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -17,12 +17,12 @@ classifiers = [
     "Natural Language :: English",
     "Operating System :: OS Independent",
     "Topic :: Utilities",
-    "Topic :: Software Development :: Libraries :: Python Modules"
+    "Topic :: Software Development :: Libraries :: Python Modules",
 ]
 include = [
     { path = "CHANGELOG.md", format = "sdist" },
     { path = "README.md", format = "sdist" },
-    { path = "LICENSE", format = "sdist" }
+    { path = "LICENSE", format = "sdist" },
 ]
 
 [tool.poetry.urls]
@@ -35,6 +35,7 @@ xmltodict = ">=0.13.0"
 langcodes = ">=3.4.0"
 Pillow = ">=10.4.0"
 pypdf = ">=5.6.1"
+rarfile = ">=4.0"
 
 [tool.poetry.scripts]
 cbzplayer = "cbz.__main__:main"
