@@ -10,6 +10,7 @@ from pathlib import Path
 
 import rarfile
 import xmltodict
+
 from pypdf import PdfReader
 
 from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
