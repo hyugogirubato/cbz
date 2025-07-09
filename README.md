@@ -197,11 +197,11 @@ comic_from_pdf = ComicInfo.from_pdf('/path/to/your_comic.pdf')
 <a href="https://github.com/hyugogirubato"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/65763543?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="hyugogirubato"/></a>
 <a href="https://github.com/piskunqa"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/38443069?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="piskunqa"/></a>
 <a href="https://github.com/OleskiiPyskun"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/75667382?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="OleskiiPyskun"/></a>
+<a href="https://github.com/tssujt"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/17313425?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="tssujt"/></a>
+<a href="https://github.com/gokender"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/3709740?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="gokender"/></a>
 <a href="https://github.com/domenicoblanco"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/9018104?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="domenicoblanco"/></a>
 <a href="https://github.com/RivMt"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/40086827?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="RivMt"/></a>
 <a href="https://github.com/flolep2607"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/24566964?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="flolep2607"/></a>
-<a href="https://github.com/gokender"><img src="https://images.weserv.nl/?url=avatars.githubusercontent.com/u/3709740?v=4&h=25&w=25&fit=cover&mask=circle&maxage=7d" alt="gokender"/></a>
-
 
 ## Licensing
 
