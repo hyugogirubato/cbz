@@ -3,7 +3,6 @@ import tkinter as tk
 
 from io import BytesIO
 from tkinter import ttk
-from tkinter.constants import DISABLED, NORMAL
 from pathlib import Path
 
 try:
@@ -207,7 +206,7 @@ class Player:
         self.summary_text = tk.Text(self.canvas, wrap=tk.WORD, bg='white', bd=0, padx=10, pady=10)
         self.summary_text.tag_configure('bold', font=('Arial', 13, 'bold'))
         self.summary_text.tag_configure('normal', font=('Arial', 12), lmargin1=10, lmargin2=10)
-        self.summary_text.config(state=DISABLED)
+        self.summary_text.config(state=tk.DISABLED)
 
     def show_page(self) -> None:
         """
@@ -223,8 +222,8 @@ class Player:
             self._show_image_page()
 
         # Update navigation button states based on current page index
-        self.prev_button.config(state=DISABLED if self.current_page == -1 else NORMAL)
-        self.next_button.config(state=DISABLED if self.current_page + 1 == len(self.comic_info.pages) else NORMAL)
+        self.prev_button.config(state=tk.DISABLED if self.current_page == -1 else tk.NORMAL)
+        self.next_button.config(state=tk.DISABLED if self.current_page + 1 == len(self.comic_info.pages) else tk.NORMAL)
 
         # Update page index label text
         self.page_index_label.config(text=f'{self.current_page + 1}/{len(self.comic_info.pages)}')
@@ -239,7 +238,7 @@ class Player:
         # Display summary for the first page
         infos = self.comic_info.get_info()
 
-        self.summary_text.config(state=NORMAL)
+        self.summary_text.config(state=tk.NORMAL)
         self.summary_text.delete('1.0', tk.END)
 
         for key, value in infos.items():
@@ -249,7 +248,7 @@ class Player:
                 self.summary_text.insert(tk.END, f'{key}\n', 'bold')
                 self.summary_text.insert(tk.END, f'{value}\n\n', 'normal')
 
-        self.summary_text.config(state=DISABLED)
+        self.summary_text.config(state=tk.DISABLED)
         self.summary_text.place(relwidth=1, relheight=1)
 
     def _show_image_page(self) -> None:
