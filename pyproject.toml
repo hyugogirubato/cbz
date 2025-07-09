@@ -30,7 +30,7 @@ include = [
 "Changelog" = "https://github.com/hyugogirubato/cbz/blob/main/CHANGELOG.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8"
+python = ">=3.8,<4.0"
 langcodes = ">=3.4.0"
 Pillow = ">=10.4.0"
 pypdf = ">=5.6.1"
