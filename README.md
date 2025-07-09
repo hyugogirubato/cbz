@@ -220,4 +220,4 @@ This project uses the following third-party libraries:
 
 * * *
 
-© hyugogirubato 2024
+© hyugogirubato 2025
