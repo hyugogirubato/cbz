@@ -112,11 +112,12 @@ cbzplayer my_comic.pdf
 ### Requirements for CBR Support
 
 CBR file support requires:
+
 - The `rarfile` Python package (automatically installed with CBZ)
 - An external RAR extraction tool such as:
-  - `unrar` (recommended) - Available in most package managers
-  - `rar` - Commercial RAR archiver
-  - `7zip` - Free alternative with RAR support
+    - `unrar` (recommended) - Available in most package managers
+    - `rar` - Commercial RAR archiver
+    - `7zip` - Free alternative with RAR support
 
 For installation instructions and compatibility details, see the [rarfile documentation](https://github.com/markokr/rarfile).
 
@@ -189,6 +190,7 @@ comic_from_pdf = ComicInfo.from_pdf('/path/to/your_comic.pdf')
 ```
 
 **Notes**:
+
 - CBR support requires an external RAR extraction tool. For detailed compatibility information and advanced configuration, see the [rarfile documentation](https://github.com/markokr/rarfile).
 - PDF files only provide image content; comic metadata (title, series, etc.) is not available from PDF files.
 
