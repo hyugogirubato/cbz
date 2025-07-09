@@ -128,6 +128,7 @@ The `ComicInfo` class represents a comic book with metadata and pages. It suppor
 
 ```python
 from cbz.comic import ComicInfo
+from cbz.constants import PageType, YesNo, Manga, AgeRating, Format
 from cbz.page import PageInfo
 
 # Example usage:
