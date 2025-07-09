@@ -9,6 +9,7 @@ description = "CBZ simplifies creating, managing, and viewing comic book files i
 license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
 readme = "README.md"
+repository = "https://github.com/hyugogirubato/cbz"
 keywords = ["python", "cbz", "cbr", "pdf", "ebooks", "manga", "comics", "webtoons"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
