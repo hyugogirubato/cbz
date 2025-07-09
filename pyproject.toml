@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "cbz"
-version = "3.3.7"
-description = "CBZ simplifies creating, managing, and viewing comic book files in CBZ, CBR, and PDF formats, offering seamless packaging, metadata handling for CBZ/CBR files, and built-in viewing capabilities"
+version = "3.4.0"
+description = "CBZ simplifies creating, managing, and viewing comic book files in CBZ, CBR, and PDF formats, offering seamless packaging, metadata handling and built-in viewing capabilities."
 license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
 readme = "README.md"
@@ -23,7 +23,7 @@ classifiers = [
 include = [
     { path = "CHANGELOG.md", format = "sdist" },
     { path = "README.md", format = "sdist" },
-    { path = "LICENSE", format = "sdist" },
+    { path = "LICENSE", format = "sdist" }
 ]
 
 [tool.poetry.urls]
