@@ -5,7 +5,7 @@ import zipfile
 from datetime import datetime, timezone
 from enum import Enum
 from io import BytesIO
-from typing import Union
+from typing import Union, List
 from pathlib import Path
 
 import rarfile
@@ -24,27 +24,27 @@ class ComicInfo(ComicModel):
     ComicInfo class that represents the comic book information and pages.
     """
 
-    def __init__(self, pages: list[PageInfo], **kwargs):
+    def __init__(self, pages: List[PageInfo], **kwargs):
         """
         Initialize the ComicInfo instance with pages and additional attributes.
 
         Args:
-            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            pages (List[PageInfo]): List of PageInfo objects representing the comic pages.
             **kwargs: Additional attributes for the comic.
 
         Attributes:
-            pages (list[PageInfo]): Stores the comic pages.
+            pages (List[PageInfo]): Stores the comic pages.
         """
         super(ComicInfo, self).__init__(**kwargs)
         self.pages = pages
 
     @classmethod
-    def from_pages(cls, pages: list[PageInfo], **kwargs) -> ComicInfo:
+    def from_pages(cls, pages: List[PageInfo], **kwargs) -> ComicInfo:
         """
         Create a ComicInfo instance from pages and additional attributes.
 
         Args:
-            pages (list[PageInfo]): List of PageInfo objects representing the comic pages.
+            pages (List[PageInfo]): List of PageInfo objects representing the comic pages.
             **kwargs: Additional attributes for the comic.
 
         Returns:
@@ -117,7 +117,7 @@ class ComicInfo(ComicModel):
         Returns:
             ComicInfo: An instance of ComicInfo.
         """
-        pages: list[PageInfo] = []
+        pages: List[PageInfo] = []
         reader = PdfReader(path)
         for page in reader.pages:
             for image in page.images:
@@ -145,12 +145,12 @@ class ComicInfo(ComicModel):
         return content
 
     @staticmethod
-    def __process_archive(archive_file: zipfile.ZipFile | rarfile.RarFile) -> ComicInfo:
+    def __process_archive(archive_file: Union[zipfile.ZipFile, rarfile.RarFile]) -> ComicInfo:
         """
         Common logic for processing archive files (CBZ/CBR).
 
         Args:
-            archive_file: Archive file object (ZipFile or RarFile)
+            archive_file (Union[ZipFile, RarFile]): Archive file object (ZipFile or RarFile)
 
         Returns:
             ComicInfo: An instance of ComicInfo.
