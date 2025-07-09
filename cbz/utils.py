@@ -8,7 +8,7 @@ from PIL.IcoImagePlugin import IcoFile
 
 def default_attr(value: any) -> any:
     """
-    Provides a default value based on the expected type of an attribute.
+    Provides a default value based on the expected type of attribute.
 
     Args:
         value (any): Expected type or class of the attribute.
