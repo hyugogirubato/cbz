@@ -8,7 +8,7 @@ from cbz.comic import ComicInfo
 def main() -> None:
     # Parse command-line arguments
     parser = argparse.ArgumentParser(description='Launch CBZ player with a comic book file')
-    parser.add_argument('comic_path', type=Path, metavar='<file>', help='Path to the CBZ comic book file.')
+    parser.add_argument('comic_path', type=Path, metavar='<file>', help='Path to the CBZ, CBR, or PDF comic book file.')
     args = parser.parse_args()
 
     # Validate the provided path
@@ -17,9 +17,14 @@ def main() -> None:
         print(f'Error: The file "{comic_path}" does not exist or is not a valid file.')
         exit(1)
 
-    # Create ComicInfo object from CBZ file
+    # Create ComicInfo object from comic file
     try:
-        comic_info = ComicInfo.from_pdf(comic_path) if comic_path.suffix == '.pdf' else ComicInfo.from_cbz(comic_path)
+        if comic_path.suffix == '.pdf':
+            comic_info = ComicInfo.from_pdf(comic_path)
+        elif comic_path.suffix == '.cbr':
+            comic_info = ComicInfo.from_cbr(comic_path)
+        else:
+            comic_info = ComicInfo.from_cbz(comic_path)
         # Launch the CBZ player
         comic_info.show()
     except Exception as e:

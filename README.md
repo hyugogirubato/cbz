@@ -1,6 +1,6 @@
 # CBZ
 
-CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ format. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata, and display comics using a built-in player.
+CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ, CBR, and PDF formats. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata from CBZ and CBR files, and display comics using a built-in player.
 
 ## Features
 
@@ -8,8 +8,9 @@ CBZ is a Python library designed for creating, manipulating, and viewing comic b
 - 📚 Pack images into CBZ format for comics and manga
 - 📝 Extract and manage title, series, format, and more
 - 🖼️ Handle comic pages with attributes like type and format
-- 📦 Unpack CBZ files to retrieve comic information
-- 🛠️ Built-in player for viewing CBZ comics
+- 📦 Unpack CBZ and CBR files to retrieve comic information, or extract images from PDF files
+- 🛠️ Built-in player for viewing CBZ, CBR, and PDF comics
+- 📚 Full CBR (RAR) format support for reading existing archives
 - ❤️ Fully Open-Source! Pull Requests Welcome
 
 ## Installation
@@ -73,7 +74,15 @@ if __name__ == '__main__':
 
 ## Player
 
-CBZ includes a command-line player for viewing CBZ comic book files. Simply run cbzplayer <file> to launch the player with the specified CBZ file.
+CBZ includes a command-line player for viewing comic book files in multiple formats. Simply run `cbzplayer <file>` to launch the player with the specified comic book file.
+
+### Supported Formats
+
+- **CBZ** (Comic Book ZIP) - Standard ZIP archives containing images and metadata
+- **CBR** (Comic Book RAR) - RAR archives containing images and metadata
+- **PDF** - Portable Document Format files with embedded images (images only, no metadata)
+
+### Usage
 
 ````shell
 usage: cbzplayer [-h] <file>
@@ -81,12 +90,35 @@ usage: cbzplayer [-h] <file>
 Launch CBZ player with a comic book file
 
 positional arguments:
-  <file>      Path to the CBZ comic book file.
+  <file>      Path to the CBZ, CBR, or PDF comic book file.
 
 options:
   -h, --help  show this help message and exit
-
 ````
+
+### Examples
+
+```shell
+# View a CBZ file
+cbzplayer my_comic.cbz
+
+# View a CBR file
+cbzplayer my_comic.cbr
+
+# View a PDF file
+cbzplayer my_comic.pdf
+```
+
+### Requirements for CBR Support
+
+CBR file support requires:
+- The `rarfile` Python package (automatically installed with CBZ)
+- An external RAR extraction tool such as:
+  - `unrar` (recommended) - Available in most package managers
+  - `rar` - Commercial RAR archiver
+  - `7zip` - Free alternative with RAR support
+
+For installation instructions and compatibility details, see the [rarfile documentation](https://github.com/markokr/rarfile).
 
 ## Detailed Usage
 
@@ -135,13 +167,29 @@ Pack the comic into a CBZ file format:
 cbz_content = comic.pack()
 ```
 
-### Unpacking from CBZ
+### Loading from Different Formats
 
-Load a comic from an existing CBZ file:
+Load a comic from an existing CBZ file (with metadata):
 
 ```python
 comic_from_cbz = ComicInfo.from_cbz('/path/to/your_comic.cbz')
 ```
+
+Load a comic from an existing CBR file (with metadata):
+
+```python
+comic_from_cbr = ComicInfo.from_cbr('/path/to/your_comic.cbr')
+```
+
+Load a comic from a PDF file (images only, no metadata):
+
+```python
+comic_from_pdf = ComicInfo.from_pdf('/path/to/your_comic.pdf')
+```
+
+**Notes**:
+- CBR support requires an external RAR extraction tool. For detailed compatibility information and advanced configuration, see the [rarfile documentation](https://github.com/markokr/rarfile).
+- PDF files only provide image content; comic metadata (title, series, etc.) is not available from PDF files.
 
 ## Contributors
 
@@ -156,9 +204,19 @@ comic_from_cbz = ComicInfo.from_cbz('/path/to/your_comic.cbz')
 
 ## Licensing
 
-This software is licensed under the terms of [MIT License](https://github.com/hyugogirubato/cbz/blob/main/LICENSE).  
+This software is licensed under the terms of [MIT License](https://github.com/hyugogirubato/cbz/blob/main/LICENSE).
 You can find a copy of the license in the LICENSE file in the root folder.
 
-* * * 
+### Third-Party Licenses
+
+This project uses the following third-party libraries:
+
+- **[langcodes](https://pypi.org/project/langcodes/)** - MIT License
+- **[Pillow](https://pypi.org/project/Pillow/)** - HPND License
+- **[pypdf](https://pypi.org/project/pypdf/)** - BSD License
+- **[rarfile](https://pypi.org/project/rarfile/)** - ISC License
+- **[xmltodict](https://pypi.org/project/xmltodict/)** - MIT License
+
+* * *
 
 © hyugogirubato 2024

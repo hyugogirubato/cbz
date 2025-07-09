@@ -8,8 +8,9 @@ from io import BytesIO
 from typing import Union
 from pathlib import Path
 
-from pypdf import PdfReader
+import rarfile
 import xmltodict
+from pypdf import PdfReader
 
 from cbz.constants import XML_NAME, COMIC_FIELDS, IMAGE_FORMAT, PAGE_FIELDS
 from cbz.models import ComicModel
@@ -66,7 +67,25 @@ class ComicInfo(ComicModel):
         """
         if not isinstance(path, (Path, str)):
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        return cls.__unpack_zip(path)
+        return cls.__unpack_zip(Path(path))
+
+    @classmethod
+    def from_cbr(cls, path: Union[Path, str]) -> ComicInfo:
+        """
+        Create a ComicInfo instance from a CBR file.
+
+        Args:
+            path (Union[Path, str]): Path to the CBR file.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+
+        Raises:
+            ValueError: If the provided path is not a Path object or a string.
+        """
+        if not isinstance(path, (Path, str)):
+            raise ValueError(f'Expecting Path object or path string, got {path!r}')
+        return cls.__unpack_rar(Path(path))
 
     @classmethod
     def from_pdf(cls, path: Union[Path, str]) -> ComicInfo:
@@ -84,7 +103,7 @@ class ComicInfo(ComicModel):
         """
         if not isinstance(path, (Path, str)):
             raise ValueError(f'Expecting Path object or path string, got {path!r}')
-        return cls.__unpack_pdf(path)
+        return cls.__unpack_pdf(Path(path))
 
     @staticmethod
     def __unpack_pdf(path: Path) -> ComicInfo:
@@ -107,6 +126,80 @@ class ComicInfo(ComicModel):
         return ComicInfo.from_pages(pages=pages)
 
     @staticmethod
+    def __extract_info(items: dict, fields: dict) -> dict:
+        """
+        Extract and convert field information from the provided items and fields.
+
+        Args:
+            items (dict): Dictionary containing item attributes.
+            fields (dict): Dictionary containing field mappings and types.
+
+        Returns:
+            dict: Dictionary with extracted and converted field information.
+        """
+        content = {}
+        for key, (field_key, field_type) in fields.items():
+            if field_key in items:
+                content[key] = field_type(items[field_key])
+        return content
+
+    @staticmethod
+    def __process_archive(archive_file: zipfile.ZipFile | rarfile.RarFile) -> ComicInfo:
+        """
+        Common logic for processing archive files (CBZ/CBR).
+
+        Args:
+            archive_file: Archive file object (ZipFile or RarFile)
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+        """
+        pages = []
+        names = archive_file.namelist()
+        comic_info = {}
+
+        if XML_NAME in names:
+            with archive_file.open(XML_NAME, 'r') as f:
+                comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
+            names.remove(XML_NAME)
+
+        comic = ComicInfo.__extract_info(
+            items=comic_info,
+            fields=COMIC_FIELDS
+        )
+
+        pages_info = comic_info.get('Pages', {}).get('Page', [])
+        for i, name in enumerate(names):
+            suffix = Path(name).suffix
+            if suffix:
+                assert suffix in IMAGE_FORMAT, f'Unsupported image format: {suffix}'
+                with archive_file.open(name, 'r') as f:
+                    page_info = {}
+                    if i < len(pages_info):
+                        page_info = ComicInfo.__extract_info(
+                            items=pages_info[i],
+                            fields=PAGE_FIELDS
+                        )
+                    page_info['name'] = Path(name).name
+                    pages.append(PageInfo.loads(data=f.read(), **page_info))
+
+        return ComicInfo.from_pages(pages=pages, **comic)
+
+    @staticmethod
+    def __unpack_rar(path: Path) -> ComicInfo:
+        """
+        Unpack a CBR file and create a ComicInfo instance.
+
+        Args:
+            path (Path): Path to the CBR file.
+
+        Returns:
+            ComicInfo: An instance of ComicInfo.
+        """
+        with rarfile.RarFile(path, 'r') as rf:
+            return ComicInfo.__process_archive(rf)
+
+    @staticmethod
     def __unpack_zip(path: Path) -> ComicInfo:
         """
         Unpack a CBZ file and create a ComicInfo instance.
@@ -117,56 +210,8 @@ class ComicInfo(ComicModel):
         Returns:
             ComicInfo: An instance of ComicInfo.
         """
-
-        def __info(items: dict, fields: dict) -> dict:
-            """
-            Extract and convert field information from the provided items and fields.
-
-            Args:
-                items (dict): Dictionary containing item attributes.
-                fields (dict): Dictionary containing field mappings and types.
-
-            Returns:
-                dict: Dictionary with extracted and converted field information.
-            """
-            content = {}
-            for key, (field_key, field_type) in fields.items():
-                if field_key in items:
-                    content[key] = field_type(items[field_key])
-            return content
-
-        pages = []
-
         with zipfile.ZipFile(path, 'r', zipfile.ZIP_STORED) as zf:
-            names = zf.namelist()
-            comic_info = {}
-
-            if XML_NAME in names:
-                with zf.open(XML_NAME, 'r') as f:
-                    comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
-                names.remove(XML_NAME)
-
-            comic = __info(
-                items=comic_info,
-                fields=COMIC_FIELDS
-            )
-
-            pages_info = comic_info.get('Pages', {}).get('Page', [])
-            for i, name in enumerate(names):
-                suffix = Path(name).suffix
-                if suffix:
-                    assert suffix in IMAGE_FORMAT, f'Unsupported image format: {suffix}'
-                    with zf.open(name, 'r') as f:
-                        page_info = {}
-                        if i < len(pages_info):
-                            page_info = __info(
-                                items=pages_info[i],
-                                fields=PAGE_FIELDS
-                            )
-                        page_info['name'] = Path(f.name).name
-                        pages.append(PageInfo.loads(data=f.read(), **page_info))
-
-        return ComicInfo.from_pages(pages=pages, **comic)
+            return ComicInfo.__process_archive(zf)
 
     def get_info(self) -> dict:
         """
