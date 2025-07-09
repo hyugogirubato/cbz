@@ -207,6 +207,16 @@ comic_from_pdf = ComicInfo.from_pdf('/path/to/your_comic.pdf')
 This software is licensed under the terms of [MIT License](https://github.com/hyugogirubato/cbz/blob/main/LICENSE).
 You can find a copy of the license in the LICENSE file in the root folder.
 
+### Third-Party Licenses
+
+This project uses the following third-party libraries:
+
+- **[langcodes](https://pypi.org/project/langcodes/)** - MIT License
+- **[Pillow](https://pypi.org/project/Pillow/)** - HPND License
+- **[pypdf](https://pypi.org/project/pypdf/)** - BSD License
+- **[rarfile](https://pypi.org/project/rarfile/)** - ISC License
+- **[xmltodict](https://pypi.org/project/xmltodict/)** - MIT License
+
 * * *
 
 © hyugogirubato 2024
