@@ -25,6 +25,7 @@ def main() -> None:
             comic_info = ComicInfo.from_cbr(comic_path)
         else:
             comic_info = ComicInfo.from_cbz(comic_path)
+
         # Launch the CBZ player
         comic_info.show()
     except Exception as e:
