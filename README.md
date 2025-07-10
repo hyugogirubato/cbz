@@ -15,7 +15,7 @@ CBZ is a Python library designed for creating, manipulating, and viewing comic b
 
 ## Installation
 
-Install KeyDive from PyPI using Poetry:
+Install CBZ from PyPI using pip:
 
 ```shell
 pip install cbz
