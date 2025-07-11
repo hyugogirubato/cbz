@@ -10,7 +10,16 @@ license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
 readme = "README.md"
 repository = "https://github.com/hyugogirubato/cbz"
-keywords = ["python", "cbz", "cbr", "pdf", "ebooks", "manga", "comics", "webtoons"]
+keywords = [
+    "python",
+    "cbz",
+    "cbr",
+    "pdf",
+    "ebooks",
+    "manga",
+    "comics",
+    "webtoons",
+]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
@@ -23,7 +32,7 @@ classifiers = [
 include = [
     { path = "CHANGELOG.md", format = "sdist" },
     { path = "README.md", format = "sdist" },
-    { path = "LICENSE", format = "sdist" }
+    { path = "LICENSE", format = "sdist" },
 ]
 
 [tool.poetry.urls]
@@ -45,6 +54,17 @@ cbzplayer = "cbz.__main__:main"
 name = "localpypi"
 url = "https://pypi.org/simple/"
 priority = "primary"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = ">=7.4.0,<8.0.0"
+pytest-cov = ">=5.0.0"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+    "--cov=cbz",
+]
 
 [certificates]
 localpypi = { cert = false }
