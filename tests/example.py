@@ -7,7 +7,7 @@ from cbz.page import PageInfo
 PARENT = Path(__file__).parent
 
 if __name__ == '__main__':
-    paths = list((PARENT / 'images').iterdir())
+    paths = list((PARENT / 'fixtures' / 'images').iterdir())
 
     # Load each page from the 'images' folder into a list of PageInfo objects
     pages = [
