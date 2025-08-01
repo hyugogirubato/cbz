@@ -161,7 +161,7 @@ class ComicInfo(ComicModel):
 
         if XML_NAME in names:
             with archive_file.open(XML_NAME, 'r') as f:
-                comic_info = xmltodict.parse(f.read()).get('ComicInfo', {})
+                comic_info = xmltodict.parse(f.read(), force_list=('Page',)).get('ComicInfo', {})
             names.remove(XML_NAME)
 
         comic = ComicInfo.__extract_info(

@@ -1,3 +1,4 @@
+import tempfile
 from pathlib import Path
 from typing import List
 
@@ -157,3 +158,22 @@ class TestComicInfo:
 
         assert comic.title == 'Empty Test'
         assert len(comic.pages) == 0
+
+    def test_single_page_comic_load(self, images_dir):
+        """Test loading comic with a single page."""
+        image_paths = sorted(list(images_dir.iterdir()))[:1]
+        pages = [PageInfo.load(path=path) for path in image_paths]
+
+        comic = ComicInfo.from_pages(pages=pages, title="Single Page Test")
+
+        with tempfile.TemporaryDirectory() as temp_dir:
+            temp_path = Path(temp_dir) / "single_page.cbz"
+            data = comic.pack()
+            with open(temp_path, "wb") as f:
+                f.write(data)
+
+            assert temp_path.exists()
+
+            comic_loaded = ComicInfo.from_cbz(temp_path)
+            assert comic_loaded.title == "Single Page Test"
+            assert len(comic_loaded.pages) == 1
