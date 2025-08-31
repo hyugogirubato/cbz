@@ -220,6 +220,6 @@ This project uses the following third-party libraries:
 - **[rarfile](https://pypi.org/project/rarfile/)** - ISC License
 - **[xmltodict](https://pypi.org/project/xmltodict/)** - MIT License
 
-* * *
+---
 
 © hyugogirubato 2025
