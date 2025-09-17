@@ -156,7 +156,7 @@ class ComicInfo(ComicModel):
             ComicInfo: An instance of ComicInfo.
         """
         pages = []
-        names = archive_file.namelist()
+        names = sorted(archive_file.namelist())
         comic_info = {}
 
         if XML_NAME in names:
