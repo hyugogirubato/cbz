@@ -216,6 +216,8 @@ This project uses the following third-party libraries:
 
 - **[langcodes](https://pypi.org/project/langcodes/)** - MIT License
 - **[Pillow](https://pypi.org/project/Pillow/)** - HPND License
+- **[pillow-avif-plugin](https://pypi.org/project/pillow-avif-plugin/)** - MIT License
+- **[pillow-jxl-plugin](https://pypi.org/project/pillow-jxl-plugin/)** - MIT License
 - **[pypdf](https://pypi.org/project/pypdf/)** - BSD License
 - **[rarfile](https://pypi.org/project/rarfile/)** - ISC License
 - **[xmltodict](https://pypi.org/project/xmltodict/)** - MIT License
