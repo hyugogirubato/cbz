@@ -5,12 +5,14 @@ from langcodes import Language
 
 XML_NAME = 'ComicInfo.xml'
 IMAGE_FORMAT = {
-    '.jpeg', '.jpg',  # Joint Photographic Experts Group
-    '.png',  # Portable Network Graphics
-    '.gif',  # Graphics Interchange Format
-    '.bmp',  # Bitmap Image File
-    '.tiff', '.tif',  # Tagged Image File Format
-    '.webp'  # Web Picture Format
+    '.jpeg', '.jpg',   # JPEG (Joint Photographic Experts Group)
+    '.png',            # PNG (Portable Network Graphics)
+    '.gif',            # GIF (Graphics Interchange Format)
+    '.bmp',            # BMP (Bitmap Image File)
+    '.tiff', '.tif',   # TIFF (Tagged Image File Format)
+    '.webp',           # WebP (Web Picture Format, by Google)
+    '.jxl',            # JPEG XL (Next-generation JPEG format)
+    '.avif'            # AVIF (AV1 Image File Format, based on AV1 codec)
 }
 
 
