@@ -75,6 +75,8 @@ class PageInfo(PageModel):
             data = base64.b64decode(data)
         if not isinstance(data, bytes):
             raise ValueError(f'Expecting Bytes or Base64 input, got {data!r}')
+        if not data.strip():
+            raise ValueError(f'Empty or null data provided (length={len(data)})')
         return cls(data, **kwargs)
 
     @classmethod
