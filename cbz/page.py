@@ -98,7 +98,7 @@ class PageInfo(PageModel):
         path = Path(path)
         with path.open(mode='rb') as f:
             kwargs.setdefault('name', path.name)
-            return cls(f.read(), **kwargs)
+            return cls.loads(f.read(), **kwargs)
 
     def show(self) -> None:
         """
