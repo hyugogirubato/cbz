@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import zipfile
 
 from datetime import datetime, timezone
@@ -172,17 +173,22 @@ class ComicInfo(ComicModel):
         pages_info = comic_info.get('Pages', {}).get('Page', [])
         for i, name in enumerate(names):
             suffix = Path(name).suffix
-            if suffix:
-                assert suffix in IMAGE_FORMAT, f'Unsupported image format: {suffix}'
-                with archive_file.open(name, 'r') as f:
-                    page_info = {}
-                    if i < len(pages_info):
-                        page_info = ComicInfo.__extract_info(
-                            items=pages_info[i],
-                            fields=PAGE_FIELDS
-                        )
-                    page_info['name'] = Path(name).name
-                    pages.append(PageInfo.loads(data=f.read(), **page_info))
+
+            # Some archives may contain folders or hidden files (e.g., ".extra/" or "__MACOSX/.DS_Store")
+            # that could corrupt the suffix detection and cause invalid image handling.
+            if not suffix or suffix not in IMAGE_FORMAT:
+                logging.warning(f'Skipping unsupported or invalid file: {name!r} (suffix={suffix!r})')
+                continue
+
+            with archive_file.open(name, 'r') as f:
+                page_info = {}
+                if i < len(pages_info):
+                    page_info = ComicInfo.__extract_info(
+                        items=pages_info[i],
+                        fields=PAGE_FIELDS
+                    )
+                page_info['name'] = Path(name).name
+                pages.append(PageInfo.loads(data=f.read(), **page_info))
 
         return ComicInfo.from_pages(pages=pages, **comic)
 
