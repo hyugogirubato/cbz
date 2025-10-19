@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.4.5] - 2025-10-19
+
+### Changed
+
+- More flexible suffix checking to support complex archive paths.
+- Improved validation in `PageInfo.load()` to handle empty or invalid data correctly.
+
 ## [3.4.4] - 2025-09-21
 
 ### Added
@@ -225,6 +232,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial release.
 
+[3.4.5]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.5
 [3.4.4]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.4
 [3.4.3]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.3
 [3.4.2]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.2
