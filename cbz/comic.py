@@ -176,7 +176,7 @@ class ComicInfo(ComicModel):
 
             # Some archives may contain folders or hidden files (e.g., ".extra/" or "__MACOSX/.DS_Store")
             # that could corrupt the suffix detection and cause invalid image handling.
-            if not suffix or suffix not in IMAGE_FORMAT:
+            if suffix not in IMAGE_FORMAT:
                 logging.warning(f'Skipping unsupported or invalid file: {name!r} (suffix={suffix!r})')
                 continue
 
