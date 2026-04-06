@@ -1,120 +1,120 @@
+"""
+Comic page management module.
+
+Provides the PageInfo class to load, manipulate and save
+individual comic pages (images).
+"""
+
 from __future__ import annotations
 
 import base64
-
+from dataclasses import dataclass, field
 from io import BytesIO
-from typing import Union, Optional
 from pathlib import Path
+from typing import Union
 
 from PIL import Image
 
-from cbz.constants import IMAGE_FORMAT
+from cbz.constants import IMAGE_FORMATS
+from cbz.exceptions import InvalidImageError
 from cbz.models import PageModel
 
 
+@dataclass
 class PageInfo(PageModel):
-    """
-    Model for representing comic book pages with additional content handling capabilities.
+    """Represents a comic page with its image content.
+
+    Inherits from PageModel for XML metadata and adds binary image
+    content management. Image metadata (dimensions, size, format)
+    is automatically extracted when content is assigned.
+
+    Attributes:
+        _content: Binary image data (accessed via the content property).
     """
 
-    def __init__(self, content: bytes, name: Optional[str] = None, **kwargs):
-        """
-        Initializes a PageInfo instance.
-
-        Args:
-            content (bytes): The content of the page in bytes.
-            name (Optional[str]): The name of the page (default is None).
-            **kwargs: Additional keyword arguments passed to the base class initializer.
-        """
-        super(PageInfo, self).__init__(**kwargs)
-        self.name = name
-        self.content = content
+    _content: bytes = field(default=b"", repr=False, compare=False)
 
     @property
     def content(self) -> bytes:
-        """
-       Getter property for the content of the page.
-
-       Returns:
-           bytes: The content of the page.
-       """
-        return self.__content
+        """Binary image data."""
+        return self._content
 
     @content.setter
     def content(self, value: bytes) -> None:
-        """
-        Setter property for the content of the page. Automatically extracts image metadata.
-
-        Args:
-            value (bytes): The content of the page in bytes.
-        """
-        with Image.open(BytesIO(value)) as f:
-            self.suffix = f'.{f.format.lower()}'
-            assert self.suffix in IMAGE_FORMAT, f'Unsupported image format: {self.suffix}'
-            self.image_width = int(f.width)
-            self.image_height = int(f.height)
+        """Set content and automatically extract image metadata."""
+        try:
+            with Image.open(BytesIO(value)) as img:
+                self.suffix = f".{img.format.lower()}"
+                if self.suffix not in IMAGE_FORMATS:
+                    raise InvalidImageError(f"Unsupported image format: {self.suffix}")
+                self.image_width = img.width
+                self.image_height = img.height
+        except InvalidImageError:
+            raise
+        except Exception as e:
+            raise InvalidImageError(f"Unable to read image: {e}") from e
         self.image_size = len(value)
-        self.__content = value
+        self._content = value
+
+    def __post_init__(self) -> None:
+        """Validate content if provided at initialization."""
+        if self._content:
+            self.content = self._content
 
     @classmethod
     def loads(cls, data: Union[str, bytes], **kwargs) -> PageInfo:
-        """
-        Class method to create a PageInfo instance from bytes or base64-encoded data.
+        """Create a PageInfo from raw bytes or base64-encoded data.
 
         Args:
-            data (Union[str, bytes]): The data representing the page content.
-            **kwargs: Additional keyword arguments passed to the PageInfo initializer.
+            data: Binary image data or base64-encoded string.
+            **kwargs: Additional attributes (type, bookmark, etc.).
 
         Returns:
-            PageInfo: The created PageInfo instance.
+            PageInfo instance with loaded content.
 
         Raises:
-            ValueError: If the data type is neither str nor bytes.
+            InvalidImageError: If the data is empty or invalid.
+            ValueError: If the data type is not str or bytes.
         """
         if isinstance(data, str):
             data = base64.b64decode(data)
         if not isinstance(data, bytes):
-            raise ValueError(f'Expecting Bytes or Base64 input, got {data!r}')
-        if not data.strip():
-            raise ValueError(f'Empty or null data provided (length={len(data)})')
-        return cls(data, **kwargs)
+            raise ValueError(f"Expected bytes or base64 str, got {type(data).__name__}")
+        if not data or data.isspace():
+            raise InvalidImageError("Empty or null image data")
+
+        page = cls(**kwargs)
+        page.content = data
+        return page
 
     @classmethod
     def load(cls, path: Union[Path, str], **kwargs) -> PageInfo:
-        """
-        Class method to create a PageInfo instance from a file path.
+        """Create a PageInfo from an image file.
 
         Args:
-            path (Union[Path, str]): The path to the file containing the page content.
-            **kwargs: Additional keyword arguments passed to the PageInfo initializer.
+            path: Path to the image file.
+            **kwargs: Additional attributes (type, bookmark, etc.).
 
         Returns:
-            PageInfo: The created PageInfo instance.
+            PageInfo instance with file content loaded.
 
         Raises:
-            ValueError: If the path type is neither Path nor str.
-            FileNotFoundError: If the specified file path does not exist.
+            FileNotFoundError: If the file does not exist.
+            InvalidImageError: If the image is invalid.
         """
-        if not isinstance(path, (Path, str)):
-            raise ValueError(f'Expecting Path object or path string, got {path!r}')
         path = Path(path)
-        with path.open(mode='rb') as f:
-            kwargs.setdefault('name', path.name)
-            return cls.loads(f.read(), **kwargs)
+        kwargs.setdefault("name", path.name)
+        return cls.loads(path.read_bytes(), **kwargs)
 
     def show(self) -> None:
-        """
-        Displays the page content using an image viewer.
-        """
-        with Image.open(BytesIO(self.content)) as f:
-            f.show()
+        """Display the page in the default image viewer."""
+        with Image.open(BytesIO(self.content)) as img:
+            img.show()
 
     def save(self, path: Union[Path, str]) -> None:
-        """
-        Saves the page content to a file.
+        """Save the page to a file.
 
         Args:
-            path (Union[Path, str]): The path where the content should be saved.
+            path: Destination file path.
         """
-        with Path(path).open(mode='wb') as f:
-            f.write(self.content)
+        Path(path).write_bytes(self.content)

@@ -4,6 +4,60 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-04-06
+
+### Added
+
+- Dataclass-based models (`ComicModel`, `PageModel`) with automatic XML field mapping via `xml_field()` metadata.
+- Sequence protocol on `ComicInfo`: `len(comic)`, `comic[i]`, `comic[0:3]`, `for page in comic`, `page in comic`.
+- Custom exception hierarchy: `CBZError`, `InvalidImageError`, `EmptyArchiveError`, `InvalidMetadataError`, `UnsupportedFormatError`.
+- `__version__` attribute exported from the `cbz` package.
+- Simplified top-level imports: `from cbz import ComicInfo, PageInfo, PageType, Format, ...`.
+- Complete CBZ format RFC specification in `docs/RFC-CBZ.md`.
+- `save()` now writes directly to disk (more memory-efficient for large archives).
+- Type hints cached with `lru_cache` for faster archive loading with many pages.
+
+### Changed
+
+- **Python 3.9+ required** (previously 3.8+).
+- `ComicModel` and `PageModel` rewritten as `@dataclass` classes (replaces custom `BaseModel` with field dictionaries).
+- All enumerations now inherit from `StrEnum` (backported `str, Enum` mixin for Python < 3.11).
+- Optional numeric fields (`number`, `year`, `volume`, etc.) now default to `None` instead of `-1`.
+- `Rating` validates `0.0-5.0` with `ValueError` instead of `assert` (default `0.0` instead of `-1`).
+- `LanguageISO` raises `ValueError` instead of `AssertionError` for invalid codes.
+- Removed `utils.verify_attr`, `utils.default_attr`, `utils.repr_attr` (replaced by dataclass defaults and enum handling).
+- Removed `COMIC_FIELDS` and `PAGE_FIELDS` dictionaries (replaced by dataclass field metadata).
+- `save()` writes directly to a file-backed `ZipFile` instead of going through an in-memory buffer.
+- All documentation, docstrings and comments rewritten in English.
+
+### Renamed
+
+- `Manga.RIGHT_LEFT` -> `Manga.YES_AND_RIGHT_TO_LEFT`
+- `AgeRating.ADULTS18` -> `AgeRating.ADULTS_ONLY_18_PLUS`
+- `AgeRating.CHILDHOOD` -> `AgeRating.EARLY_CHILDHOOD`
+- `AgeRating.EVERYONE10` -> `AgeRating.EVERYONE_10_PLUS`
+- `AgeRating.KIDS` -> `AgeRating.KIDS_TO_ADULTS`
+- `AgeRating.MA15` -> `AgeRating.MA15_PLUS`
+- `AgeRating.MATURE17` -> `AgeRating.MATURE_17_PLUS`
+- `AgeRating.R18` -> `AgeRating.R18_PLUS`
+- `AgeRating.PENDING` -> `AgeRating.RATING_PENDING`
+- `AgeRating.X18` -> `AgeRating.X18_PLUS`
+- `Format.BLACK_WHITE` -> `Format.BLACK_AND_WHITE`
+- `Format.DIRECTOR_CUT` -> `Format.DIRECTORS_CUT`
+- `Format.TRADE_PAPER_BACK` -> `Format.TRADE_PAPERBACK`
+- `Format.POINT1` -> `Format.POINT_ONE`
+- `IMAGE_FORMAT` -> `IMAGE_FORMATS`
+
+### Fixed
+
+- Image resource leak in the player when navigating pages.
+- ICO-to-PNG conversion resource leak in `utils.ico_to_png`.
+- `data.strip()` in `PageInfo.loads()` no longer copies the entire byte string for validation.
+
+### New Contributors
+
+- [chase-roohms](https://github.com/chase-roohms)
+
 ## [3.4.5] - 2025-10-19
 
 ### Changed
@@ -232,6 +286,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Initial release.
 
+[4.0.0]: https://github.com/hyugogirubato/cbz/releases/tag/v4.0.0
 [3.4.5]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.5
 [3.4.4]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.4
 [3.4.3]: https://github.com/hyugogirubato/cbz/releases/tag/v3.4.3

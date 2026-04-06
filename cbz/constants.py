@@ -1,193 +1,143 @@
+"""
+Constants and types for the CBZ/ComicInfo format.
+
+Defines enumerations, supported types and field mappings
+conforming to the ComicInfo.xml v2.1 schema.
+"""
+
+from __future__ import annotations
+
 from enum import Enum
 from typing import Union
 
 from langcodes import Language
 
-XML_NAME = 'ComicInfo.xml'
-IMAGE_FORMAT = {
-    '.jpeg', '.jpg',   # JPEG (Joint Photographic Experts Group)
-    '.png',            # PNG (Portable Network Graphics)
-    '.gif',            # GIF (Graphics Interchange Format)
-    '.bmp',            # BMP (Bitmap Image File)
-    '.tiff', '.tif',   # TIFF (Tagged Image File Format)
-    '.webp',           # WebP (Web Picture Format, by Google)
-    '.jxl',            # JPEG XL (Next-generation JPEG format)
-    '.avif'            # AVIF (AV1 Image File Format, based on AV1 codec)
-}
+
+class StrEnum(str, Enum):
+    """Backport of StrEnum for Python < 3.11."""
+
+    def __str__(self) -> str:
+        return self.value
 
 
-class YesNo(Enum):
-    UNKNOWN = 'Unknown'
-    NO = 'No'
-    YES = 'Yes'
+# Name of the XML metadata file inside the CBZ archive
+XML_NAME = "ComicInfo.xml"
+
+# Supported image formats in CBZ archives
+IMAGE_FORMATS: frozenset = frozenset({
+    ".jpeg", ".jpg", ".png", ".gif", ".bmp",
+    ".tiff", ".tif", ".webp", ".jxl", ".avif"
+})
 
 
-class Manga(Enum):
-    UNKNOWN = 'Unknown'
-    NO = 'No'
-    YES = 'Yes'
-    RIGHT_LEFT = 'YesAndRightToLeft'
+class YesNo(StrEnum):
+    """Ternary boolean: Unknown / No / Yes."""
+    UNKNOWN = "Unknown"
+    NO = "No"
+    YES = "Yes"
 
 
-class PageType(Enum):
-    FRONT_COVER = 'FrontCover'
-    INNER_COVER = 'InnerCover'
-    ROUNDUP = 'Roundup'
-    STORY = 'Story'
-    ADVERTISEMENT = 'Advertisement'
-    EDITORIAL = 'Editorial'
-    LETTERS = 'Letters'
-    PREVIEW = 'Preview'
-    BACK_COVER = 'BackCover'
-    OTHER = 'Other'
-    DELETED = 'Deleted'
+class Manga(StrEnum):
+    """Comic reading direction."""
+    UNKNOWN = "Unknown"
+    NO = "No"
+    YES = "Yes"
+    YES_AND_RIGHT_TO_LEFT = "YesAndRightToLeft"
 
 
-class AgeRating(Enum):
-    UNKNOWN = 'Unknown'
-    ADULTS18 = 'Adults Only 18+'
-    CHILDHOOD = 'Early Childhood'
-    EVERYONE = 'Everyone'
-    EVERYONE10 = 'Everyone 10+'
-    G = 'G'
-    KIDS = 'Kids to Adults'
-    M = 'M'
-    MA15 = 'MA15+'
-    MATURE17 = 'Mature 17+'
-    PG = 'PG'
-    R18 = 'R18+'
-    PENDING = 'Rating Pending'
-    TEEN = 'Teen'
-    X18 = 'X18+'
+class PageType(StrEnum):
+    """Page type within the archive."""
+    FRONT_COVER = "FrontCover"
+    INNER_COVER = "InnerCover"
+    ROUNDUP = "Roundup"
+    STORY = "Story"
+    ADVERTISEMENT = "Advertisement"
+    EDITORIAL = "Editorial"
+    LETTERS = "Letters"
+    PREVIEW = "Preview"
+    BACK_COVER = "BackCover"
+    OTHER = "Other"
+    DELETED = "Deleted"
 
 
-class Format(Enum):
-    UNKNOWN = 'Unknown'
-    # ONE_SHOT = '1 Shot'
-    # ONE_SHOT = '1/2',
-    # ONE_SHOT = '1-Shot'
-    ANNOTATION = 'Annotation'
-    # ANNOTATIONS = 'Annotations'
-    ANNUAL = 'Annual'
-    ANTHOLOGY = 'Anthology'
-    # BLACK_WHITE = 'B&W'
-    # BLACK_WHITE = 'B/W'
-    # BLACK_WHITE = 'B&&W'
-    BLACK_WHITE = 'Black & White'
-    # BOX_SET = 'Box Set'
-    BOX_SET = 'Box-Set'
-    CROSSOVER = 'Crossover'
-    DIRECTOR_CUT = 'Director\'s Cut'
-    EPILOGUE = 'Epilogue'
-    EVENT = 'Event'
-    FCBD = 'FCBD'
-    FLYER = 'Flyer'
-    # GIANT_SIZE = 'Giant'
-    # GIANT_SIZE = 'Giant Size'
-    GIANT_SIZE = 'Giant-Size'
-    GRAPHIC_NOVEL = 'Graphic Novel'
-    # HARDCOVER = 'Hardcover'
-    HARDCOVER = 'Hard-Cover'
-    # KING_SIZE = 'King'
-    # KING_SIZE = 'King Size'
-    KING_SIZE = 'King-Size'
-    LIMITED_SERIES = 'Limited Series'
-    MAGAZINE = 'Magazine'
-    NSFW = 'NSFW'
-    # ONE_SHOT = 'One Shot'
-    ONE_SHOT = 'One-Shot'
-    POINT1 = 'Point 1'
-    PREVIEW = 'Preview'
-    PROLOGUE = 'Prologue'
-    REFERENCE = 'Reference'
-    REVIEW = 'Review'
-    REVIEWED = 'Reviewed'
-    SCANLATION = 'Scanlation'
-    SCRIPT = 'Script'
-    SERIES = 'Series'
-    SKETCH = 'Sketch'
-    SPECIAL = 'Special'
-    # TRADE_PAPER_BACK = 'TPB'
-    TRADE_PAPER_BACK = 'Trade Paper Back'
-    # WEB_COMIC = 'WebComic'
-    WEB_COMIC = 'Web Comic'
-    # YEAR_ONE = 'Year 1'
-    YEAR_ONE = 'Year One'
+class AgeRating(StrEnum):
+    """Content age rating classification."""
+    UNKNOWN = "Unknown"
+    ADULTS_ONLY_18_PLUS = "Adults Only 18+"
+    EARLY_CHILDHOOD = "Early Childhood"
+    EVERYONE = "Everyone"
+    EVERYONE_10_PLUS = "Everyone 10+"
+    G = "G"
+    KIDS_TO_ADULTS = "Kids to Adults"
+    M = "M"
+    MA15_PLUS = "MA15+"
+    MATURE_17_PLUS = "Mature 17+"
+    PG = "PG"
+    R18_PLUS = "R18+"
+    RATING_PENDING = "Rating Pending"
+    TEEN = "Teen"
+    X18_PLUS = "X18+"
+
+
+class Format(StrEnum):
+    """Comic publication format."""
+    UNKNOWN = "Unknown"
+    ANNOTATION = "Annotation"
+    ANNUAL = "Annual"
+    ANTHOLOGY = "Anthology"
+    BLACK_AND_WHITE = "Black & White"
+    BOX_SET = "Box-Set"
+    CROSSOVER = "Crossover"
+    DIRECTORS_CUT = "Director's Cut"
+    EPILOGUE = "Epilogue"
+    EVENT = "Event"
+    FCBD = "FCBD"
+    FLYER = "Flyer"
+    GIANT_SIZE = "Giant-Size"
+    GRAPHIC_NOVEL = "Graphic Novel"
+    HARDCOVER = "Hard-Cover"
+    KING_SIZE = "King-Size"
+    LIMITED_SERIES = "Limited Series"
+    MAGAZINE = "Magazine"
+    NSFW = "NSFW"
+    ONE_SHOT = "One-Shot"
+    POINT_ONE = "Point 1"
+    PREVIEW = "Preview"
+    PROLOGUE = "Prologue"
+    REFERENCE = "Reference"
+    REVIEW = "Review"
+    REVIEWED = "Reviewed"
+    SCANLATION = "Scanlation"
+    SCRIPT = "Script"
+    SERIES = "Series"
+    SKETCH = "Sketch"
+    SPECIAL = "Special"
+    TRADE_PAPERBACK = "Trade Paper Back"
+    WEB_COMIC = "Web Comic"
+    YEAR_ONE = "Year One"
 
 
 class Rating(float):
+    """Community rating between 0.0 and 5.0 (None if unset)."""
 
-    def __new__(cls, value: Union[int, float] = -1) -> float:
-        assert -1 <= float(value) <= 5, f'Rating must be between 0 and 5, input {value}'
-        return super().__new__(cls, value)
+    def __new__(cls, value: Union[int, float] = 0.0) -> Rating:
+        val = float(value)
+        if not (0.0 <= val <= 5.0):
+            raise ValueError(f"Rating must be between 0.0 and 5.0, got {value}")
+        return super().__new__(cls, val)
 
 
 class LanguageISO(str):
+    """Valid ISO language code, validated via the langcodes library."""
 
-    def __new__(cls, value: str = '') -> str:
-        assert not value or Language.get(str(value)).is_valid(), f'Invalid {value} language'
-        return super().__new__(cls, value)
-
-
-COMIC_FIELDS = {
-    'title': ('Title', str),
-    'series': ('Series', str),
-    'number': ('Number', int),
-    'count': ('Count', int),
-    'volume': ('Volume', int),
-    'alternate_series': ('AlternateSeries', str),
-    'alternate_number': ('AlternateNumber', int),
-    'alternate_count': ('AlternateCount', int),
-    'summary': ('Summary', str),
-    'notes': ('Notes', str),
-    'year': ('Year', int),
-    'month': ('Month', int),
-    'day': ('Day', int),
-    'writer': ('Writer', str),
-    'penciller': ('Penciller', str),
-    'inker': ('Inker', str),
-    'colorist': ('Colorist', str),
-    'letterer': ('Letterer', str),
-    'cover_artist': ('CoverArtist', str),
-    'editor': ('Editor', str),
-    'translator': ('Translator', str),
-    'publisher': ('Publisher', str),
-    'imprint': ('Imprint', str),
-    'genre': ('Genre', str),
-    'tags': ('Tags', str),
-    'web': ('Web', str),
-    'format': ('Format', Format),
-    'ean': ('EAN', str),
-    'black_white': ('BlackAndWhite', YesNo),
-    'manga': ('Manga', Manga),
-    'characters': ('Characters', str),
-    'teams': ('Teams', str),
-    'locations': ('Locations', str),
-    'scan_information': ('ScanInformation', str),
-    'story_arc': ('StoryArc', str),
-    'story_arc_number': ('StoryArcNumber', int),
-    'series_group': ('SeriesGroup', str),
-    'age_rating': ('AgeRating', AgeRating),
-    'main_character_or_team': ('MainCharacterOrTeam', str),
-    'review': ('Review', str),
-    'language_iso': ('LanguageISO', LanguageISO),
-    'community_rating': ('CommunityRating', Rating),
-    'added': ('Added', str),
-    'released': ('Released', str),
-    'file_size': ('FileSize', int),
-    'file_modified_time': ('FileModifiedTime', str),
-    'file_creation_time': ('FileCreationTime', str),
-    'book_price': ('BookPrice', str),
-    'custom_values_store': ('CustomValuesStore', str)
-}
-
-PAGE_FIELDS = {
-    'image': ('@Image', int),
-    'type': ('@Type', PageType),
-    'double': ('@DoublePage', bool),
-    'key': ('@Key', str),
-    'bookmark': ('@Bookmark', str),
-    'image_size': ('@ImageSize', int),
-    'image_width': ('@ImageWidth', int),
-    'image_height': ('@ImageHeight', int)
-}
+    def __new__(cls, value: str = "") -> LanguageISO:
+        val = str(value)
+        if val:
+            try:
+                if not Language.get(val).is_valid():
+                    raise ValueError(f"Invalid ISO language code: {value!r}")
+            except ValueError:
+                raise
+            except Exception as e:
+                raise ValueError(f"Invalid ISO language code: {value!r}") from e
+        return super().__new__(cls, val)
