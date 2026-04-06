@@ -207,7 +207,7 @@ class ComicInfo(ComicModel):
             return ComicInfo.__process_archive(rf)
 
     @staticmethod
-    def __unpack_zip(path: Path) -> ComicInfo:
+    def __unpack_zip(path: Path, compression: int = zipfile.ZIP_STORED) -> ComicInfo:
         """
         Unpack a CBZ file and create a ComicInfo instance.
 
@@ -217,7 +217,7 @@ class ComicInfo(ComicModel):
         Returns:
             ComicInfo: An instance of ComicInfo.
         """
-        with zipfile.ZipFile(path, 'r', zipfile.ZIP_STORED) as zf:
+        with zipfile.ZipFile(path, 'r', compression) as zf:
             return ComicInfo.__process_archive(zf)
 
     def get_info(self) -> dict:
@@ -271,7 +271,7 @@ class ComicInfo(ComicModel):
         })
         return comic_info
 
-    def pack(self, rename: bool = True) -> bytes:
+    def pack(self, rename: bool = True, compression: int = zipfile.ZIP_STORED) -> bytes:
         """
         Pack the comic information and pages into a CBZ file format.
 
@@ -282,7 +282,7 @@ class ComicInfo(ComicModel):
             bytes: Bytes representing the packed CBZ file.
         """
         zip_buffer = BytesIO()
-        with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_STORED) as zf:
+        with zipfile.ZipFile(zip_buffer, 'w', compression) as zf:
             content = xmltodict.unparse({'ComicInfo': self.get_info()}, pretty=True)
             zf.writestr(
                 XML_NAME,
