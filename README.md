@@ -384,7 +384,7 @@ See [`CHANGELOG.md`](CHANGELOG.md) for the full version history, including migra
 
 ## Licensing
 
-This software is licensed under the terms of [MIT License](https://github.com/hyugogirubato/cbz/blob/main/LICENSE). You can find a copy of the license in the LICENSE file in the root folder.
+This software is licensed under the terms of [MIT License](LICENSE). You can find a copy of the license in the LICENSE file in the root folder.
 
 ### Third-Party Licenses
 
