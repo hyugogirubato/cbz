@@ -23,11 +23,17 @@ class StrEnum(str, Enum):
 # Name of the XML metadata file inside the CBZ archive
 XML_NAME = "ComicInfo.xml"
 
+# Name of the listing file inside the CBC archive
+CBC_NAME = "comics.txt"
+
 # Supported image formats in CBZ archives
 IMAGE_FORMATS: frozenset = frozenset({
     ".jpeg", ".jpg", ".png", ".gif", ".bmp",
     ".tiff", ".tif", ".webp", ".jxl", ".avif"
 })
+
+# Supported nested comic archive formats in CBC collections
+CBC_ARCHIVE_FORMATS: frozenset = frozenset({".cbz", ".cbr"})
 
 
 class YesNo(StrEnum):

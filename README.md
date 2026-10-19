@@ -1,6 +1,6 @@
 # CBZ
 
-CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ, CBR, and PDF formats. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata from CBZ and CBR files, and display comics using a built-in player.
+CBZ is a Python library designed for creating, manipulating, and viewing comic book files in CBZ, CBR, CBC, and PDF formats. It offers a straightforward interface to pack comic pages into CBZ archives, extract metadata from CBZ and CBR files, and display comics using a built-in player.
 
 ## Features
 
@@ -9,7 +9,8 @@ CBZ is a Python library designed for creating, manipulating, and viewing comic b
 - Extract and manage metadata: title, series, format, and more
 - Handle comic pages with attributes like type, dimensions, and bookmarks
 - Unpack CBZ and CBR files to retrieve comic information, or extract images from PDF files
-- Built-in player for viewing CBZ, CBR, and PDF comics
+- Load and create CBC (Comic Book Collection) files bundling multiple CBZ/CBR comics
+- Built-in player for viewing CBZ, CBR, CBC, and PDF comics
 - Sequence protocol: iterate, index, and slice comic pages directly
 - Dataclass-based models with automatic XML mapping and strict type validation
 - Image support: JPEG, PNG, GIF, BMP, TIFF, WebP, JPEG XL, AVIF
@@ -86,6 +87,7 @@ CBZ includes a command-line player for viewing comic book files in multiple form
 
 - **CBZ** (Comic Book ZIP) - Standard ZIP archives containing images and metadata
 - **CBR** (Comic Book RAR) - RAR archives containing images and metadata
+- **CBC** (Comic Book Collection) - ZIP archives bundling several CBZ/CBR comics (comics are shown sequentially)
 - **PDF** - Portable Document Format files with embedded images (images only, no metadata)
 
 ### Usage
@@ -93,10 +95,10 @@ CBZ includes a command-line player for viewing comic book files in multiple form
 ```shell
 usage: cbzplayer [-h] <file>
 
-CBZ/CBR/PDF comic reader
+CBZ/CBR/CBC/PDF comic reader
 
 positional arguments:
-<file>      Path to the CBZ, CBR or PDF comic book file.
+<file>      Path to the CBZ, CBR, CBC or PDF comic book file.
 
 options:
 -h, --help  show this help message and exit
@@ -110,6 +112,9 @@ cbzplayer my_comic.cbz
 
 # View a CBR file
 cbzplayer my_comic.cbr
+
+# View a CBC collection
+cbzplayer my_collection.cbc
 
 # View a PDF file
 cbzplayer my_comic.pdf
@@ -233,6 +238,44 @@ comic = ComicInfo.from_pdf("your_comic.pdf")
 
 - CBR support requires an external RAR extraction tool. For detailed compatibility information and advanced configuration, see the [rarfile documentation](https://github.com/markokr/rarfile).
 - PDF files only provide image content; comic metadata (title, series, etc.) is not available from PDF files.
+
+### Comic Book Collections (CBC)
+
+A CBC file is a ZIP archive bundling several CBZ/CBR comics together with a UTF-8 `comics.txt` listing in the form `filename:title`:
+
+```
+comics.txt
+one.cbz
+two.cbz
+```
+
+Load an existing CBC file:
+
+```python
+from cbz import ComicCollection
+
+collection = ComicCollection.from_cbc("your_collection.cbc")
+
+for entry in collection:
+    print(entry.name, entry.title, len(entry.comic))
+```
+
+Create a new CBC file from a list of comics:
+
+```python
+from cbz import ComicCollection
+
+collection = ComicCollection.from_comics(
+    comics=[comic_one, comic_two],
+    titles=["Chapter One", "Chapter Two"],
+)
+collection.save("your_collection.cbc")
+```
+
+**Notes:**
+
+- Comics are loaded and saved in the order of the `comics.txt` listing.
+- Nested CBR files require an external RAR extraction tool, same as regular CBR support.
 
 ### Page Properties
 

@@ -162,6 +162,23 @@ class ComicInfo(ComicModel):
             return cls._process_archive(archive)
 
     @classmethod
+    def _from_bytes(cls, data: bytes, opener: type) -> ComicInfo:
+        """Load a comic from raw archive bytes (CBZ or CBR).
+
+        Used for nested archives, e.g. the comic files inside
+        a CBC (Comic Book Collection) file.
+
+        Args:
+            data: Binary data of the archive.
+            opener: Archive class (zipfile.ZipFile or rarfile.RarFile).
+
+        Returns:
+            ComicInfo instance with pages and metadata.
+        """
+        with opener(BytesIO(data), "r") as archive:
+            return cls._process_archive(archive)
+
+    @classmethod
     def from_cbz(cls, path: Union[Path, str]) -> ComicInfo:
         """Load a comic from a CBZ (ZIP) file.
 
