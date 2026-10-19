@@ -6,6 +6,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from cbz.collection import ComicCollection
 from cbz.comic import ComicInfo
 from cbz.exceptions import CBZError
 
@@ -13,13 +14,13 @@ from cbz.exceptions import CBZError
 def main() -> None:
     """Launch the comic reader with the specified file."""
     parser = argparse.ArgumentParser(
-        description="CBZ/CBR/PDF comic reader"
+        description="CBZ/CBR/CBC/PDF comic reader"
     )
     parser.add_argument(
         "comic_path",
         type=Path,
         metavar="<file>",
-        help="Path to the CBZ, CBR or PDF comic book file."
+        help="Path to the CBZ, CBR, CBC or PDF comic book file."
     )
     args = parser.parse_args()
 
@@ -34,6 +35,10 @@ def main() -> None:
             comic = ComicInfo.from_pdf(path)
         elif suffix == ".cbr":
             comic = ComicInfo.from_cbr(path)
+        elif suffix == ".cbc":
+            collection = ComicCollection.from_cbc(path)
+            collection.show()
+            return
         else:
             comic = ComicInfo.from_cbz(path)
 

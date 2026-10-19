@@ -2,10 +2,11 @@
 CBZ - Python library for digital comic book management.
 
 Supports creating, manipulating and viewing CBZ (Comic Book ZIP),
-CBR (Comic Book RAR) and PDF files.
+CBR (Comic Book RAR), CBC (Comic Book Collection) and PDF files.
 """
 
 from cbz.comic import ComicInfo
+from cbz.collection import ComicCollection, ComicEntry
 from cbz.page import PageInfo
 from cbz.constants import (
     AgeRating,
@@ -24,9 +25,11 @@ from cbz.exceptions import (
     UnsupportedFormatError
 )
 
-__version__ = "4.0.0"
+__version__ = "4.1.0"
 __all__ = [
     "ComicInfo",
+    "ComicCollection",
+    "ComicEntry",
     "PageInfo",
     "AgeRating",
     "Format",

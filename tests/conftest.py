@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pytest
 
+from cbz.collection import ComicCollection, ComicEntry
 from cbz.comic import ComicInfo
 from cbz.constants import PageType
 from cbz.page import PageInfo
@@ -51,3 +52,28 @@ def sample_cbz_file(tmp_path: Path, images_dir: Path) -> Path:
     cbz_path = tmp_path / "test_comic.cbz"
     cbz_path.write_bytes(comic.pack())
     return cbz_path
+
+
+@pytest.fixture
+def sample_cbc_file(tmp_path: Path, images_dir: Path) -> Path:
+    """Create a temporary CBC file for testing."""
+    image_paths = sorted(list(images_dir.iterdir()))
+    entries = []
+    for i, chunk in enumerate((image_paths[:3], image_paths[3:6])):
+        pages = [PageInfo.load(path=path) for path in chunk]
+        comic = ComicInfo.from_pages(
+            pages=pages,
+            title=f"Chapter {i + 1}",
+            series="Test Series",
+            number=i + 1,
+        )
+        entries.append(ComicEntry(
+            name=f"chapter-{i + 1}.cbz",
+            title=f"Chapter {i + 1}",
+            comic=comic,
+        ))
+
+    collection = ComicCollection(entries=entries)
+    cbc_path = tmp_path / "test_collection.cbc"
+    cbc_path.write_bytes(collection.pack())
+    return cbc_path

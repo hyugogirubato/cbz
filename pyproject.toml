@@ -4,8 +4,8 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
 name = "cbz"
-version = "4.0.0"
-description = "Modern Python library for creating, manipulating and viewing comics in CBZ, CBR and PDF formats."
+version = "4.1.0"
+description = "Modern Python library for creating, manipulating and viewing comics in CBZ, CBR, CBC and PDF formats."
 license = "MIT"
 authors = ["hyugogirubato <65763543+hyugogirubato@users.noreply.github.com>"]
 readme = "README.md"
@@ -14,6 +14,7 @@ keywords = [
     "python",
     "cbz",
     "cbr",
+    "cbc",
     "pdf",
     "ebooks",
     "manga",
